@@ -1,3 +1,26 @@
+@theme {
+  --color-cyan: #06b6d4;
+  --color-cyan-dim: #0a3d52;
+  --color-cyan-mid: #0891b2;
+  --color-cyan-bright: #22d3ee;
+  --color-amber: #f59e0b;
+  --color-amber-mid: #b45309;
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-deep: #080c10;
+  --color-base: #0d1117;
+  --color-raised: #111820;
+  --color-surface: #161e28;
+  --color-elevated: #1c2634;
+  --color-border-dim: #1e2d3d;
+  --color-border-mid: #253447;
+  --color-dim: #3d5470;
+  --color-muted: #5d7a9a;
+  --color-secondary: #94a8c0;
+  --color-primary-text: #c8daea;
+  --color-bright: #e8f4fd;
+}
+
 @import "tailwindcss";
 
 /* ─── Google Fonts ──────────────────────────────────────────────────────────── */

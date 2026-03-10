@@ -61,7 +61,7 @@ const useLogin = () => {
 
     saveToken(response.token);
     saveUser({ username: response.username, email: response.email });
-    navigate("/dashboard");
+    navigate("/build/building");
   };
 
   return {

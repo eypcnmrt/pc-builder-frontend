@@ -23,42 +23,31 @@ const LogoMark = () => (
 const GeoBg = () => (
   <div
     aria-hidden="true"
-    style={{
-      position: "absolute",
-      inset: 0,
-      overflow: "hidden",
-      zIndex: 0,
-    }}
+    className="absolute inset-0 overflow-hidden z-0"
   >
     {/* base deep bg */}
-    <div style={{ position: "absolute", inset: 0, background: "var(--color-bg-deep)" }} />
+    <div className="absolute inset-0" style={{ background: "var(--color-bg-deep)" }} />
 
     {/* animated circuit grid */}
     <div
-      className="bg-circuit-lines"
-      style={{ position: "absolute", inset: 0, opacity: 0.6 }}
+      className="bg-circuit-lines absolute inset-0"
+      style={{ opacity: 0.6 }}
     />
 
     {/* diagonal accent slash */}
     <div
+      className="absolute top-0 h-full w-px"
       style={{
-        position: "absolute",
-        top: 0,
         left: "55%",
-        width: "1px",
-        height: "100%",
         background: "linear-gradient(to bottom, transparent, rgba(6,182,212,0.25) 30%, rgba(6,182,212,0.12) 70%, transparent)",
         transform: "rotate(12deg) translateX(-50%)",
         transformOrigin: "top",
       }}
     />
     <div
+      className="absolute top-0 h-full w-px"
       style={{
-        position: "absolute",
-        top: 0,
         left: "58%",
-        width: "1px",
-        height: "100%",
         background: "linear-gradient(to bottom, transparent, rgba(6,182,212,0.08) 40%, transparent)",
         transform: "rotate(12deg) translateX(-50%)",
         transformOrigin: "top",
@@ -67,44 +56,34 @@ const GeoBg = () => (
 
     {/* Large glow orbs */}
     <div
+      className="absolute pointer-events-none rounded-full"
       style={{
-        position: "absolute",
         top: "-10%",
         right: "10%",
         width: "420px",
         height: "420px",
         background: "radial-gradient(ellipse, rgba(6,182,212,0.08) 0%, transparent 65%)",
-        borderRadius: "50%",
-        pointerEvents: "none",
       }}
     />
     <div
+      className="absolute pointer-events-none rounded-full"
       style={{
-        position: "absolute",
         bottom: "-5%",
         left: "-5%",
         width: "300px",
         height: "300px",
         background: "radial-gradient(ellipse, rgba(245,158,11,0.06) 0%, transparent 65%)",
-        borderRadius: "50%",
-        pointerEvents: "none",
       }}
     />
 
     {/* Right-side decorative text */}
     <div
-      className="font-display"
+      className="font-display absolute text-[0.6rem] tracking-[0.3em] uppercase whitespace-nowrap select-none"
       style={{
-        position: "absolute",
         right: "-20px",
         top: "50%",
         transform: "translateY(-50%) rotate(90deg)",
-        fontSize: "0.6rem",
-        letterSpacing: "0.3em",
         color: "rgba(6,182,212,0.15)",
-        textTransform: "uppercase",
-        whiteSpace: "nowrap",
-        userSelect: "none",
       }}
     >
       HARDWARE · CONFIGURATOR · SYSTEM BUILD · v2.4
@@ -112,18 +91,12 @@ const GeoBg = () => (
 
     {/* Bottom status bar */}
     <div
-      className="font-mono"
+      className="font-mono absolute text-[0.6rem] flex justify-between tracking-[0.08em] select-none"
       style={{
-        position: "absolute",
         bottom: "16px",
         left: "24px",
         right: "24px",
-        fontSize: "0.6rem",
         color: "rgba(6,182,212,0.2)",
-        display: "flex",
-        justifyContent: "space-between",
-        letterSpacing: "0.08em",
-        userSelect: "none",
       }}
     >
       <span>SYS:READY</span>
@@ -136,16 +109,11 @@ const GeoBg = () => (
 /* ─── Component label chip ─────────────────────────────────────────────────── */
 const ChipLabel = ({ label }: { label: string }) => (
   <span
-    className="font-mono"
+    className="font-mono inline-block text-[0.6rem] tracking-[0.15em] uppercase py-0.5 px-2"
     style={{
-      display: "inline-block",
-      fontSize: "0.6rem",
-      letterSpacing: "0.15em",
-      textTransform: "uppercase",
       color: "var(--color-cyan)",
       background: "rgba(6,182,212,0.06)",
       border: "1px solid rgba(6,182,212,0.2)",
-      padding: "2px 8px",
     }}
   >
     {label}
@@ -158,17 +126,7 @@ const Login = () => {
     useLogin();
 
   return (
-    <div
-      style={{
-        position: "relative",
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "2rem 1rem",
-        overflow: "hidden",
-      }}
-    >
+    <div className="relative min-h-screen flex items-center justify-center p-8 overflow-hidden">
       <GeoBg />
 
       {/* Scanline overlay */}
@@ -176,49 +134,25 @@ const Login = () => {
 
       {/* Form container */}
       <div
-        className="animate-fade-in-up"
-        style={{
-          position: "relative",
-          zIndex: 1,
-          width: "100%",
-          maxWidth: "440px",
-        }}
+        className="animate-fade-in-up relative z-[1] w-full max-w-[440px]"
       >
         {/* ── Brand header ── */}
         <div
-          className="animate-fade-in-down"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            marginBottom: "2rem",
-            paddingLeft: "2px",
-          }}
+          className="animate-fade-in-down flex flex-col items-start mb-8"
+          style={{ paddingLeft: "2px" }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "10px" }}>
+          <div className="flex items-center gap-3 mb-[10px]">
             <LogoMark />
             <div>
               <div
-                className="font-display"
-                style={{
-                  fontSize: "1.6rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.06em",
-                  lineHeight: 1,
-                  color: "var(--color-text-bright)",
-                }}
+                className="font-display text-[1.6rem] font-bold tracking-[0.06em] leading-none"
+                style={{ color: "var(--color-text-bright)" }}
               >
                 PC<span style={{ color: "var(--color-cyan)" }}>BUILD</span>ER
               </div>
               <div
-                className="font-mono"
-                style={{
-                  fontSize: "0.55rem",
-                  letterSpacing: "0.25em",
-                  color: "var(--color-text-dim)",
-                  textTransform: "uppercase",
-                  marginTop: "2px",
-                }}
+                className="font-mono text-[0.55rem] tracking-[0.25em] uppercase mt-0.5"
+                style={{ color: "var(--color-text-dim)" }}
               >
                 Hardware Configurator
               </div>
@@ -229,68 +163,44 @@ const Login = () => {
 
         {/* ── Panel ── */}
         <div
-          className="panel corner-brackets accent-top animate-fade-in-up stagger-2"
-          style={{
-            padding: "2rem",
-            borderRadius: "2px",
-          }}
+          className="panel corner-brackets accent-top animate-fade-in-up stagger-2 p-8 rounded-sm"
         >
           {/* Panel header row */}
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "1.75rem",
-            }}
+            className="flex items-center justify-between mb-7"
           >
             <h2
-              className="font-display"
-              style={{
-                fontSize: "1.3rem",
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-                color: "var(--color-text-bright)",
-                textTransform: "uppercase",
-                margin: 0,
-              }}
+              className="font-display text-[1.3rem] font-semibold tracking-[0.08em] uppercase m-0"
+              style={{ color: "var(--color-text-bright)" }}
             >
               Oturum Aç
             </h2>
             <div
-              className="font-mono"
+              className="font-mono text-[0.58rem] tracking-[0.15em] py-[3px] px-2"
               style={{
-                fontSize: "0.58rem",
                 color: "var(--color-cyan)",
-                letterSpacing: "0.15em",
                 background: "rgba(6,182,212,0.08)",
                 border: "1px solid rgba(6,182,212,0.2)",
-                padding: "3px 8px",
               }}
             >
               SECURE
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+          <form onSubmit={handleSubmit} className="flex flex-col" style={{ gap: "1.25rem" }}>
 
             {/* Server error */}
             {serverError && (
               <div
-                className="animate-fade-in font-body"
+                className="animate-fade-in font-body flex items-center gap-2 py-3 px-4 text-[0.82rem]"
                 style={{
                   background: "rgba(239,68,68,0.06)",
                   border: "1px solid rgba(239,68,68,0.3)",
                   borderLeft: "3px solid var(--color-error)",
                   color: "#fca5a5",
-                  padding: "0.75rem 1rem",
-                  fontSize: "0.82rem",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
                 }}
               >
-                <FontAwesomeIcon icon={faTriangleExclamation} style={{ color: "var(--color-error)", flexShrink: 0 }} />
+                <FontAwesomeIcon icon={faTriangleExclamation} className="shrink-0" style={{ color: "var(--color-error)" }} />
                 {serverError}
               </div>
             )}
@@ -298,57 +208,32 @@ const Login = () => {
             {/* Email field */}
             <div className="animate-fade-in-up stagger-3">
               <label
-                className="font-mono"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  fontSize: "0.68rem",
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: "var(--color-text-muted)",
-                  marginBottom: "8px",
-                }}
+                className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2"
+                style={{ color: "var(--color-text-muted)" }}
               >
-                <FontAwesomeIcon icon={faUser} style={{ fontSize: "0.6rem", color: "var(--color-cyan)" }} />
+                <FontAwesomeIcon icon={faUser} className="text-[0.6rem]" style={{ color: "var(--color-cyan)" }} />
                 E-POSTA
               </label>
-              <div style={{ position: "relative" }}>
+              <div className="relative">
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => onChangeFormData("email", e.target.value)}
                   placeholder="ornek@email.com"
-                  className="hx-input"
-                  style={{ borderRadius: "2px" }}
+                  className="hx-input rounded-sm"
                 />
                 {/* focus accent line */}
                 <div
+                  className="absolute bottom-0 left-0 right-0 h-px opacity-0 pointer-events-none transition-all duration-200"
                   style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "1px",
                     background: "linear-gradient(90deg, var(--color-cyan), var(--color-cyan-bright), var(--color-cyan))",
-                    opacity: 0,
-                    transition: "opacity 0.2s",
-                    pointerEvents: "none",
                   }}
                 />
               </div>
               {errors.email && (
                 <p
-                  className="font-mono"
-                  style={{
-                    color: "#f87171",
-                    fontSize: "0.65rem",
-                    marginTop: "5px",
-                    letterSpacing: "0.05em",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
+                  className="font-mono flex items-center gap-1 text-[0.65rem] mt-[5px] tracking-[0.05em]"
+                  style={{ color: "#f87171" }}
                 >
                   <span style={{ color: "var(--color-error)" }}>!</span>
                   {errors.email}
@@ -359,19 +244,10 @@ const Login = () => {
             {/* Password field */}
             <div className="animate-fade-in-up stagger-4">
               <label
-                className="font-mono"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  fontSize: "0.68rem",
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: "var(--color-text-muted)",
-                  marginBottom: "8px",
-                }}
+                className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2"
+                style={{ color: "var(--color-text-muted)" }}
               >
-                <FontAwesomeIcon icon={faLock} style={{ fontSize: "0.6rem", color: "var(--color-cyan)" }} />
+                <FontAwesomeIcon icon={faLock} className="text-[0.6rem]" style={{ color: "var(--color-cyan)" }} />
                 ŞİFRE
               </label>
               <input
@@ -379,18 +255,12 @@ const Login = () => {
                 value={formData.password}
                 onChange={(e) => onChangeFormData("password", e.target.value)}
                 placeholder="••••••••"
-                className="hx-input"
-                style={{ borderRadius: "2px", fontFamily: "var(--font-mono)" }}
+                className="hx-input font-mono rounded-sm"
               />
               {errors.password && (
                 <p
-                  className="font-mono"
-                  style={{
-                    color: "#f87171",
-                    fontSize: "0.65rem",
-                    marginTop: "5px",
-                    letterSpacing: "0.05em",
-                  }}
+                  className="font-mono text-[0.65rem] mt-[5px] tracking-[0.05em]"
+                  style={{ color: "#f87171" }}
                 >
                   <span style={{ color: "var(--color-error)" }}>! </span>
                   {errors.password}
@@ -399,12 +269,11 @@ const Login = () => {
             </div>
 
             {/* Submit */}
-            <div className="animate-fade-in-up stagger-5" style={{ paddingTop: "4px" }}>
+            <div className="animate-fade-in-up stagger-5 pt-1">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="hx-btn-primary"
-                style={{ borderRadius: "2px", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}
+                className="hx-btn-primary rounded-sm flex items-center justify-center gap-2.5"
               >
                 {isLoading ? (
                   <>
@@ -424,42 +293,28 @@ const Login = () => {
 
           {/* Divider */}
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              margin: "1.5rem 0 1.25rem",
-            }}
+            className="flex items-center gap-3"
+            style={{ margin: "1.5rem 0 1.25rem" }}
           >
-            <div style={{ flex: 1, height: "1px", background: "var(--color-border-dim)" }} />
+            <div className="flex-1 h-px" style={{ background: "var(--color-border-dim)" }} />
             <span
-              className="font-mono"
-              style={{ fontSize: "0.58rem", color: "var(--color-text-dim)", letterSpacing: "0.1em" }}
+              className="font-mono text-[0.58rem] tracking-[0.1em]"
+              style={{ color: "var(--color-text-dim)" }}
             >
               YENİ KULLANICI
             </span>
-            <div style={{ flex: 1, height: "1px", background: "var(--color-border-dim)" }} />
+            <div className="flex-1 h-px" style={{ background: "var(--color-border-dim)" }} />
           </div>
 
           <p
-            className="font-body"
-            style={{
-              textAlign: "center",
-              fontSize: "0.82rem",
-              color: "var(--color-text-muted)",
-              margin: 0,
-            }}
+            className="font-body text-center text-[0.82rem] m-0"
+            style={{ color: "var(--color-text-muted)" }}
           >
             Hesabınız yok mu?{" "}
             <Link
               to="/register"
-              style={{
-                color: "var(--color-cyan)",
-                fontWeight: 600,
-                textDecoration: "none",
-                letterSpacing: "0.04em",
-                transition: "color 0.2s, text-shadow 0.2s",
-              }}
+              className="font-semibold no-underline tracking-[0.04em] transition-all duration-200"
+              style={{ color: "var(--color-cyan)" }}
               onMouseEnter={(e) => {
                 (e.target as HTMLElement).style.color = "var(--color-cyan-bright)";
                 (e.target as HTMLElement).style.textShadow = "0 0 12px rgba(6,182,212,0.5)";
@@ -476,16 +331,8 @@ const Login = () => {
 
         {/* Bottom meta */}
         <div
-          className="font-mono animate-fade-in stagger-8"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: "1rem",
-            fontSize: "0.55rem",
-            color: "var(--color-text-dim)",
-            letterSpacing: "0.1em",
-            padding: "0 2px",
-          }}
+          className="font-mono animate-fade-in stagger-8 flex justify-between mt-4 text-[0.55rem] tracking-[0.1em]"
+          style={{ color: "var(--color-text-dim)", padding: "0 2px" }}
         >
           <span>PCBUILDER © 2024</span>
           <span>v2.4.1</span>

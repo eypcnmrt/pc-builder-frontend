@@ -28,31 +28,25 @@ const LogoMark = () => (
 
 /* ─── Geometric background ─────────────────────────────────────────────────── */
 const GeoBg = () => (
-  <div aria-hidden="true" style={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0 }}>
-    <div style={{ position: "absolute", inset: 0, background: "var(--color-bg-deep)" }} />
+  <div aria-hidden="true" className="absolute inset-0 overflow-hidden z-0">
+    <div className="absolute inset-0" style={{ background: "var(--color-bg-deep)" }} />
 
-    <div className="bg-circuit-lines" style={{ position: "absolute", inset: 0, opacity: 0.6 }} />
+    <div className="bg-circuit-lines absolute inset-0" style={{ opacity: 0.6 }} />
 
     {/* Diagonal slash from opposite side */}
     <div
+      className="absolute top-0 h-full w-px"
       style={{
-        position: "absolute",
-        top: 0,
         left: "40%",
-        width: "1px",
-        height: "100%",
         background: "linear-gradient(to bottom, transparent, rgba(245,158,11,0.15) 30%, rgba(245,158,11,0.08) 70%, transparent)",
         transform: "rotate(-12deg) translateX(-50%)",
         transformOrigin: "top",
       }}
     />
     <div
+      className="absolute top-0 h-full w-px"
       style={{
-        position: "absolute",
-        top: 0,
         left: "37%",
-        width: "1px",
-        height: "100%",
         background: "linear-gradient(to bottom, transparent, rgba(245,158,11,0.06) 40%, transparent)",
         transform: "rotate(-12deg) translateX(-50%)",
         transformOrigin: "top",
@@ -61,44 +55,34 @@ const GeoBg = () => (
 
     {/* Glow orbs */}
     <div
+      className="absolute pointer-events-none rounded-full"
       style={{
-        position: "absolute",
         top: "-5%",
         left: "5%",
         width: "380px",
         height: "380px",
         background: "radial-gradient(ellipse, rgba(245,158,11,0.06) 0%, transparent 65%)",
-        borderRadius: "50%",
-        pointerEvents: "none",
       }}
     />
     <div
+      className="absolute pointer-events-none rounded-full"
       style={{
-        position: "absolute",
         bottom: "0",
         right: "-5%",
         width: "320px",
         height: "320px",
         background: "radial-gradient(ellipse, rgba(6,182,212,0.07) 0%, transparent 65%)",
-        borderRadius: "50%",
-        pointerEvents: "none",
       }}
     />
 
     {/* Left-side decorative text */}
     <div
-      className="font-display"
+      className="font-display absolute text-[0.6rem] tracking-[0.3em] uppercase whitespace-nowrap select-none"
       style={{
-        position: "absolute",
         left: "-20px",
         top: "50%",
         transform: "translateY(-50%) rotate(-90deg)",
-        fontSize: "0.6rem",
-        letterSpacing: "0.3em",
         color: "rgba(245,158,11,0.12)",
-        textTransform: "uppercase",
-        whiteSpace: "nowrap",
-        userSelect: "none",
       }}
     >
       REGISTER · NEW ACCOUNT · USER INIT · SEQUENCE
@@ -106,18 +90,12 @@ const GeoBg = () => (
 
     {/* Bottom status bar */}
     <div
-      className="font-mono"
+      className="font-mono absolute text-[0.6rem] flex justify-between tracking-[0.08em] select-none"
       style={{
-        position: "absolute",
         bottom: "16px",
         left: "24px",
         right: "24px",
-        fontSize: "0.6rem",
         color: "rgba(245,158,11,0.18)",
-        display: "flex",
-        justifyContent: "space-between",
-        letterSpacing: "0.08em",
-        userSelect: "none",
       }}
     >
       <span>SYS:READY</span>
@@ -130,16 +108,11 @@ const GeoBg = () => (
 /* ─── Chip label ───────────────────────────────────────────────────────────── */
 const ChipLabel = ({ label, amber }: { label: string; amber?: boolean }) => (
   <span
-    className="font-mono"
+    className="font-mono inline-block text-[0.6rem] tracking-[0.15em] uppercase py-0.5 px-2"
     style={{
-      display: "inline-block",
-      fontSize: "0.6rem",
-      letterSpacing: "0.15em",
-      textTransform: "uppercase",
       color: amber ? "var(--color-amber)" : "var(--color-cyan)",
       background: amber ? "rgba(245,158,11,0.06)" : "rgba(6,182,212,0.06)",
       border: `1px solid ${amber ? "rgba(245,158,11,0.2)" : "rgba(6,182,212,0.2)"}`,
-      padding: "2px 8px",
     }}
   >
     {label}
@@ -162,21 +135,13 @@ type FieldProps = {
 const Field = ({ label, icon, type, value, placeholder, error, onChange, delay, amber }: FieldProps) => (
   <div className="animate-fade-in-up" style={{ animationDelay: delay }}>
     <label
-      className="font-mono"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "6px",
-        fontSize: "0.68rem",
-        letterSpacing: "0.14em",
-        textTransform: "uppercase",
-        color: "var(--color-text-muted)",
-        marginBottom: "8px",
-      }}
+      className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2"
+      style={{ color: "var(--color-text-muted)" }}
     >
       <FontAwesomeIcon
         icon={icon}
-        style={{ fontSize: "0.6rem", color: amber ? "var(--color-amber)" : "var(--color-cyan)" }}
+        className="text-[0.6rem]"
+        style={{ color: amber ? "var(--color-amber)" : "var(--color-cyan)" }}
       />
       {label}
     </label>
@@ -185,22 +150,16 @@ const Field = ({ label, icon, type, value, placeholder, error, onChange, delay, 
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="hx-input"
+      className="hx-input rounded-sm"
       style={{
-        borderRadius: "2px",
         fontFamily: type === "password" ? "var(--font-mono)" : "var(--font-body)",
         borderColor: amber ? "var(--color-border-mid)" : undefined,
       }}
     />
     {error && (
       <p
-        className="font-mono"
-        style={{
-          color: "#f87171",
-          fontSize: "0.65rem",
-          marginTop: "5px",
-          letterSpacing: "0.05em",
-        }}
+        className="font-mono text-[0.65rem] mt-[5px] tracking-[0.05em]"
+        style={{ color: "#f87171" }}
       >
         <span style={{ color: "var(--color-error)" }}>! </span>
         {error}
@@ -215,53 +174,30 @@ const Register = () => {
     useRegister();
 
   return (
-    <div
-      style={{
-        position: "relative",
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "2rem 1rem",
-        overflow: "hidden",
-      }}
-    >
+    <div className="relative min-h-screen flex items-center justify-center p-8 overflow-hidden">
       <GeoBg />
       <div className="scanline" />
 
       <div
-        className="animate-fade-in-up"
-        style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: "460px" }}
+        className="animate-fade-in-up relative z-[1] w-full max-w-[460px]"
       >
         {/* ── Brand header ── */}
         <div
-          className="animate-fade-in-down"
-          style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", marginBottom: "2rem", paddingLeft: "2px" }}
+          className="animate-fade-in-down flex flex-col items-start mb-8"
+          style={{ paddingLeft: "2px" }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "10px" }}>
+          <div className="flex items-center gap-3 mb-[10px]">
             <LogoMark />
             <div>
               <div
-                className="font-display"
-                style={{
-                  fontSize: "1.6rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.06em",
-                  lineHeight: 1,
-                  color: "var(--color-text-bright)",
-                }}
+                className="font-display text-[1.6rem] font-bold tracking-[0.06em] leading-none"
+                style={{ color: "var(--color-text-bright)" }}
               >
                 PC<span style={{ color: "var(--color-cyan)" }}>BUILD</span>ER
               </div>
               <div
-                className="font-mono"
-                style={{
-                  fontSize: "0.55rem",
-                  letterSpacing: "0.25em",
-                  color: "var(--color-text-dim)",
-                  textTransform: "uppercase",
-                  marginTop: "2px",
-                }}
+                className="font-mono text-[0.55rem] tracking-[0.25em] uppercase mt-0.5"
+                style={{ color: "var(--color-text-dim)" }}
               >
                 Hardware Configurator
               </div>
@@ -272,82 +208,53 @@ const Register = () => {
 
         {/* ── Panel ── */}
         <div
-          className="panel corner-brackets animate-fade-in-up stagger-2"
-          style={{
-            padding: "2rem",
-            borderRadius: "2px",
-            borderTop: "1px solid rgba(245,158,11,0.35)",
-            position: "relative",
-          }}
+          className="panel corner-brackets animate-fade-in-up stagger-2 p-8 rounded-sm relative"
+          style={{ borderTop: "1px solid rgba(245,158,11,0.35)" }}
         >
           {/* top amber glow line */}
           <div
+            className="absolute top-0 left-0 right-0 h-px"
             style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: "1px",
               background: "linear-gradient(90deg, transparent, rgba(245,158,11,0.6), transparent)",
             }}
           />
 
           {/* Panel header */}
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "1.75rem",
-            }}
+            className="flex items-center justify-between mb-7"
           >
             <h2
-              className="font-display"
-              style={{
-                fontSize: "1.3rem",
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-                color: "var(--color-text-bright)",
-                textTransform: "uppercase",
-                margin: 0,
-              }}
+              className="font-display text-[1.3rem] font-semibold tracking-[0.08em] uppercase m-0"
+              style={{ color: "var(--color-text-bright)" }}
             >
               Hesap Oluştur
             </h2>
             <div
-              className="font-mono"
+              className="font-mono text-[0.58rem] tracking-[0.15em] py-[3px] px-2"
               style={{
-                fontSize: "0.58rem",
                 color: "var(--color-amber)",
-                letterSpacing: "0.15em",
                 background: "rgba(245,158,11,0.08)",
                 border: "1px solid rgba(245,158,11,0.25)",
-                padding: "3px 8px",
               }}
             >
               NEW USER
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+          <form onSubmit={handleSubmit} className="flex flex-col" style={{ gap: "1.1rem" }}>
 
             {/* Server error */}
             {serverError && (
               <div
-                className="animate-fade-in font-body"
+                className="animate-fade-in font-body flex items-center gap-2 py-3 px-4 text-[0.82rem]"
                 style={{
                   background: "rgba(239,68,68,0.06)",
                   border: "1px solid rgba(239,68,68,0.3)",
                   borderLeft: "3px solid var(--color-error)",
                   color: "#fca5a5",
-                  padding: "0.75rem 1rem",
-                  fontSize: "0.82rem",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
                 }}
               >
-                <FontAwesomeIcon icon={faTriangleExclamation} style={{ color: "var(--color-error)", flexShrink: 0 }} />
+                <FontAwesomeIcon icon={faTriangleExclamation} className="shrink-0" style={{ color: "var(--color-error)" }} />
                 {serverError}
               </div>
             )}
@@ -376,29 +283,18 @@ const Register = () => {
 
             {/* Side-by-side password fields on wider viewports */}
             <div
-              className="animate-fade-in-up"
+              className="animate-fade-in-up grid gap-4"
               style={{
-                display: "grid",
                 gridTemplateColumns: "1fr 1fr",
-                gap: "1rem",
                 animationDelay: "0.22s",
               }}
             >
               <div>
                 <label
-                  className="font-mono"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    fontSize: "0.68rem",
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    color: "var(--color-text-muted)",
-                    marginBottom: "8px",
-                  }}
+                  className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2"
+                  style={{ color: "var(--color-text-muted)" }}
                 >
-                  <FontAwesomeIcon icon={faLock} style={{ fontSize: "0.6rem", color: "var(--color-cyan)" }} />
+                  <FontAwesomeIcon icon={faLock} className="text-[0.6rem]" style={{ color: "var(--color-cyan)" }} />
                   Şifre
                 </label>
                 <input
@@ -406,11 +302,10 @@ const Register = () => {
                   value={formData.password}
                   onChange={(e) => onChangeFormData("password", e.target.value)}
                   placeholder="••••••••"
-                  className="hx-input"
-                  style={{ borderRadius: "2px", fontFamily: "var(--font-mono)" }}
+                  className="hx-input rounded-sm font-mono"
                 />
                 {errors.password && (
-                  <p className="font-mono" style={{ color: "#f87171", fontSize: "0.6rem", marginTop: "5px" }}>
+                  <p className="font-mono text-[0.6rem] mt-[5px]" style={{ color: "#f87171" }}>
                     ! {errors.password}
                   </p>
                 )}
@@ -418,19 +313,10 @@ const Register = () => {
 
               <div>
                 <label
-                  className="font-mono"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    fontSize: "0.68rem",
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    color: "var(--color-text-muted)",
-                    marginBottom: "8px",
-                  }}
+                  className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2"
+                  style={{ color: "var(--color-text-muted)" }}
                 >
-                  <FontAwesomeIcon icon={faShieldHalved} style={{ fontSize: "0.6rem", color: "var(--color-amber)" }} />
+                  <FontAwesomeIcon icon={faShieldHalved} className="text-[0.6rem]" style={{ color: "var(--color-amber)" }} />
                   Tekrar
                 </label>
                 <input
@@ -438,11 +324,10 @@ const Register = () => {
                   value={formData.confirmPassword}
                   onChange={(e) => onChangeFormData("confirmPassword", e.target.value)}
                   placeholder="••••••••"
-                  className="hx-input"
-                  style={{ borderRadius: "2px", fontFamily: "var(--font-mono)" }}
+                  className="hx-input rounded-sm font-mono"
                 />
                 {errors.confirmPassword && (
-                  <p className="font-mono" style={{ color: "#f87171", fontSize: "0.6rem", marginTop: "5px" }}>
+                  <p className="font-mono text-[0.6rem] mt-[5px]" style={{ color: "#f87171" }}>
                     ! {errors.confirmPassword}
                   </p>
                 )}
@@ -450,17 +335,12 @@ const Register = () => {
             </div>
 
             {/* Submit */}
-            <div className="animate-fade-in-up" style={{ animationDelay: "0.3s", paddingTop: "4px" }}>
+            <div className="animate-fade-in-up pt-1" style={{ animationDelay: "0.3s" }}>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="hx-btn-primary"
+                className="hx-btn-primary rounded-sm flex items-center justify-center gap-2.5"
                 style={{
-                  borderRadius: "2px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "10px",
                   background: isLoading
                     ? undefined
                     : "linear-gradient(135deg, #451a03 0%, #b45309 50%, #f59e0b 100%)",
@@ -495,29 +375,25 @@ const Register = () => {
 
           {/* Divider */}
           <div
-            style={{ display: "flex", alignItems: "center", gap: "12px", margin: "1.5rem 0 1.25rem" }}
+            className="flex items-center gap-3"
+            style={{ margin: "1.5rem 0 1.25rem" }}
           >
-            <div style={{ flex: 1, height: "1px", background: "var(--color-border-dim)" }} />
-            <span className="font-mono" style={{ fontSize: "0.58rem", color: "var(--color-text-dim)", letterSpacing: "0.1em" }}>
+            <div className="flex-1 h-px" style={{ background: "var(--color-border-dim)" }} />
+            <span className="font-mono text-[0.58rem] tracking-[0.1em]" style={{ color: "var(--color-text-dim)" }}>
               MEVCUT KULLANICI
             </span>
-            <div style={{ flex: 1, height: "1px", background: "var(--color-border-dim)" }} />
+            <div className="flex-1 h-px" style={{ background: "var(--color-border-dim)" }} />
           </div>
 
           <p
-            className="font-body"
-            style={{ textAlign: "center", fontSize: "0.82rem", color: "var(--color-text-muted)", margin: 0 }}
+            className="font-body text-center text-[0.82rem] m-0"
+            style={{ color: "var(--color-text-muted)" }}
           >
             Zaten hesabınız var mı?{" "}
             <Link
               to="/login"
-              style={{
-                color: "var(--color-cyan)",
-                fontWeight: 600,
-                textDecoration: "none",
-                letterSpacing: "0.04em",
-                transition: "color 0.2s, text-shadow 0.2s",
-              }}
+              className="font-semibold no-underline tracking-[0.04em] transition-all duration-200"
+              style={{ color: "var(--color-cyan)" }}
               onMouseEnter={(e) => {
                 (e.target as HTMLElement).style.color = "var(--color-cyan-bright)";
                 (e.target as HTMLElement).style.textShadow = "0 0 12px rgba(6,182,212,0.5)";
@@ -534,16 +410,8 @@ const Register = () => {
 
         {/* Bottom meta */}
         <div
-          className="font-mono animate-fade-in stagger-8"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: "1rem",
-            fontSize: "0.55rem",
-            color: "var(--color-text-dim)",
-            letterSpacing: "0.1em",
-            padding: "0 2px",
-          }}
+          className="font-mono animate-fade-in stagger-8 flex justify-between mt-4 text-[0.55rem] tracking-[0.1em]"
+          style={{ color: "var(--color-text-dim)", padding: "0 2px" }}
         >
           <span>PCBUILDER © 2024</span>
           <span>v2.4.1</span>

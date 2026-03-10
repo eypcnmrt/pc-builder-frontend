@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
-import { Login, Register, Dashboard } from "./pages";
+import { Login, Register, Dashboard, ProcessorSelect } from "./pages";
 import { getToken } from "./utils/token";
 
 type PrivateRouteProps = {
@@ -21,6 +21,14 @@ const Router = () => {
         element={
           <PrivateRoute>
             <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/build/building"
+        element={
+          <PrivateRoute>
+            <ProcessorSelect />
           </PrivateRoute>
         }
       />
