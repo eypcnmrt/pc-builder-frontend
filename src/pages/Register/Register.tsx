@@ -29,9 +29,9 @@ const LogoMark = () => (
 /* ─── Geometric background ─────────────────────────────────────────────────── */
 const GeoBg = () => (
   <div aria-hidden="true" className="absolute inset-0 overflow-hidden z-0">
-    <div className="absolute inset-0" style={{ background: "var(--color-bg-deep)" }} />
+    <div className="absolute inset-0 bg-[var(--color-bg-deep)]" />
 
-    <div className="bg-circuit-lines absolute inset-0" style={{ opacity: 0.6 }} />
+    <div className="bg-circuit-lines absolute inset-0 opacity-60" />
 
     {/* Diagonal slash from opposite side */}
     <div
@@ -77,27 +77,18 @@ const GeoBg = () => (
 
     {/* Left-side decorative text */}
     <div
-      className="font-display absolute text-[0.6rem] tracking-[0.3em] uppercase whitespace-nowrap select-none"
+      className="font-display absolute text-[0.6rem] tracking-[0.3em] uppercase whitespace-nowrap select-none text-[rgba(245,158,11,0.12)]"
       style={{
         left: "-20px",
         top: "50%",
         transform: "translateY(-50%) rotate(-90deg)",
-        color: "rgba(245,158,11,0.12)",
       }}
     >
       REGISTER · NEW ACCOUNT · USER INIT · SEQUENCE
     </div>
 
     {/* Bottom status bar */}
-    <div
-      className="font-mono absolute text-[0.6rem] flex justify-between tracking-[0.08em] select-none"
-      style={{
-        bottom: "16px",
-        left: "24px",
-        right: "24px",
-        color: "rgba(245,158,11,0.18)",
-      }}
-    >
+    <div className="font-mono absolute text-[0.6rem] flex justify-between tracking-[0.08em] select-none text-[rgba(245,158,11,0.18)] bottom-4 left-6 right-6">
       <span>SYS:READY</span>
       <span>REGISTER_MODULE::LOADED</span>
       <span>BUILD.2024.03</span>
@@ -108,12 +99,11 @@ const GeoBg = () => (
 /* ─── Chip label ───────────────────────────────────────────────────────────── */
 const ChipLabel = ({ label, amber }: { label: string; amber?: boolean }) => (
   <span
-    className="font-mono inline-block text-[0.6rem] tracking-[0.15em] uppercase py-0.5 px-2"
-    style={{
-      color: amber ? "var(--color-amber)" : "var(--color-cyan)",
-      background: amber ? "rgba(245,158,11,0.06)" : "rgba(6,182,212,0.06)",
-      border: `1px solid ${amber ? "rgba(245,158,11,0.2)" : "rgba(6,182,212,0.2)"}`,
-    }}
+    className={`font-mono inline-block text-[0.6rem] tracking-[0.15em] uppercase py-0.5 px-2 ${
+      amber
+        ? "text-[var(--color-amber)] bg-[rgba(245,158,11,0.06)] border border-[rgba(245,158,11,0.2)]"
+        : "text-[var(--color-cyan)] bg-[rgba(6,182,212,0.06)] border border-[rgba(6,182,212,0.2)]"
+    }`}
   >
     {label}
   </span>
@@ -134,14 +124,10 @@ type FieldProps = {
 
 const Field = ({ label, icon, type, value, placeholder, error, onChange, delay, amber }: FieldProps) => (
   <div className="animate-fade-in-up" style={{ animationDelay: delay }}>
-    <label
-      className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2"
-      style={{ color: "var(--color-text-muted)" }}
-    >
+    <label className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2 text-[var(--color-text-muted)]">
       <FontAwesomeIcon
         icon={icon}
-        className="text-[0.6rem]"
-        style={{ color: amber ? "var(--color-amber)" : "var(--color-cyan)" }}
+        className={`text-[0.6rem] ${amber ? "text-[var(--color-amber)]" : "text-[var(--color-cyan)]"}`}
       />
       {label}
     </label>
@@ -157,11 +143,8 @@ const Field = ({ label, icon, type, value, placeholder, error, onChange, delay, 
       }}
     />
     {error && (
-      <p
-        className="font-mono text-[0.65rem] mt-[5px] tracking-[0.05em]"
-        style={{ color: "#f87171" }}
-      >
-        <span style={{ color: "var(--color-error)" }}>! </span>
+      <p className="font-mono text-[0.65rem] mt-[5px] tracking-[0.05em] text-red-400">
+        <span className="text-[var(--color-error)]">! </span>
         {error}
       </p>
     )}
@@ -178,27 +161,16 @@ const Register = () => {
       <GeoBg />
       <div className="scanline" />
 
-      <div
-        className="animate-fade-in-up relative z-[1] w-full max-w-[460px]"
-      >
+      <div className="animate-fade-in-up relative z-[1] w-full max-w-[460px]">
         {/* ── Brand header ── */}
-        <div
-          className="animate-fade-in-down flex flex-col items-start mb-8"
-          style={{ paddingLeft: "2px" }}
-        >
+        <div className="animate-fade-in-down flex flex-col items-start mb-8 pl-0.5">
           <div className="flex items-center gap-3 mb-[10px]">
             <LogoMark />
             <div>
-              <div
-                className="font-display text-[1.6rem] font-bold tracking-[0.06em] leading-none"
-                style={{ color: "var(--color-text-bright)" }}
-              >
-                PC<span style={{ color: "var(--color-cyan)" }}>BUILD</span>ER
+              <div className="font-display text-[1.6rem] font-bold tracking-[0.06em] leading-none text-[var(--color-text-bright)]">
+                PC<span className="text-[var(--color-cyan)]">BUILD</span>ER
               </div>
-              <div
-                className="font-mono text-[0.55rem] tracking-[0.25em] uppercase mt-0.5"
-                style={{ color: "var(--color-text-dim)" }}
-              >
+              <div className="font-mono text-[0.55rem] tracking-[0.25em] uppercase mt-0.5 text-[var(--color-text-dim)]">
                 Hardware Configurator
               </div>
             </div>
@@ -208,53 +180,27 @@ const Register = () => {
 
         {/* ── Panel ── */}
         <div
-          className="panel corner-brackets animate-fade-in-up stagger-2 p-8 rounded-sm relative"
-          style={{ borderTop: "1px solid rgba(245,158,11,0.35)" }}
+          className="panel corner-brackets animate-fade-in-up stagger-2 p-8 rounded-sm relative border-t border-t-[rgba(245,158,11,0.35)]"
         >
           {/* top amber glow line */}
-          <div
-            className="absolute top-0 left-0 right-0 h-px"
-            style={{
-              background: "linear-gradient(90deg, transparent, rgba(245,158,11,0.6), transparent)",
-            }}
-          />
+          <div className="absolute top-0 left-0 right-0 h-px bg-[linear-gradient(90deg,transparent,rgba(245,158,11,0.6),transparent)]" />
 
           {/* Panel header */}
-          <div
-            className="flex items-center justify-between mb-7"
-          >
-            <h2
-              className="font-display text-[1.3rem] font-semibold tracking-[0.08em] uppercase m-0"
-              style={{ color: "var(--color-text-bright)" }}
-            >
+          <div className="flex items-center justify-between mb-7">
+            <h2 className="font-display text-[1.3rem] font-semibold tracking-[0.08em] uppercase m-0 text-[var(--color-text-bright)]">
               Hesap Oluştur
             </h2>
-            <div
-              className="font-mono text-[0.58rem] tracking-[0.15em] py-[3px] px-2"
-              style={{
-                color: "var(--color-amber)",
-                background: "rgba(245,158,11,0.08)",
-                border: "1px solid rgba(245,158,11,0.25)",
-              }}
-            >
+            <div className="font-mono text-[0.58rem] tracking-[0.15em] py-[3px] px-2 text-[var(--color-amber)] bg-[rgba(245,158,11,0.08)] border border-[rgba(245,158,11,0.25)]">
               NEW USER
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col" style={{ gap: "1.1rem" }}>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-[1.1rem]">
 
             {/* Server error */}
             {serverError && (
-              <div
-                className="animate-fade-in font-body flex items-center gap-2 py-3 px-4 text-[0.82rem]"
-                style={{
-                  background: "rgba(239,68,68,0.06)",
-                  border: "1px solid rgba(239,68,68,0.3)",
-                  borderLeft: "3px solid var(--color-error)",
-                  color: "#fca5a5",
-                }}
-              >
-                <FontAwesomeIcon icon={faTriangleExclamation} className="shrink-0" style={{ color: "var(--color-error)" }} />
+              <div className="animate-fade-in font-body flex items-center gap-2 py-3 px-4 text-[0.82rem] bg-[rgba(239,68,68,0.06)] border border-[rgba(239,68,68,0.3)] border-l-[3px] border-l-[var(--color-error)] text-red-300">
+                <FontAwesomeIcon icon={faTriangleExclamation} className="shrink-0 text-[var(--color-error)]" />
                 {serverError}
               </div>
             )}
@@ -283,18 +229,12 @@ const Register = () => {
 
             {/* Side-by-side password fields on wider viewports */}
             <div
-              className="animate-fade-in-up grid gap-4"
-              style={{
-                gridTemplateColumns: "1fr 1fr",
-                animationDelay: "0.22s",
-              }}
+              className="animate-fade-in-up grid grid-cols-2 gap-4"
+              style={{ animationDelay: "0.22s" }}
             >
               <div>
-                <label
-                  className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2"
-                  style={{ color: "var(--color-text-muted)" }}
-                >
-                  <FontAwesomeIcon icon={faLock} className="text-[0.6rem]" style={{ color: "var(--color-cyan)" }} />
+                <label className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2 text-[var(--color-text-muted)]">
+                  <FontAwesomeIcon icon={faLock} className="text-[0.6rem] text-[var(--color-cyan)]" />
                   Şifre
                 </label>
                 <input
@@ -305,18 +245,15 @@ const Register = () => {
                   className="hx-input rounded-sm font-mono"
                 />
                 {errors.password && (
-                  <p className="font-mono text-[0.6rem] mt-[5px]" style={{ color: "#f87171" }}>
+                  <p className="font-mono text-[0.6rem] mt-[5px] text-red-400">
                     ! {errors.password}
                   </p>
                 )}
               </div>
 
               <div>
-                <label
-                  className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2"
-                  style={{ color: "var(--color-text-muted)" }}
-                >
-                  <FontAwesomeIcon icon={faShieldHalved} className="text-[0.6rem]" style={{ color: "var(--color-amber)" }} />
+                <label className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2 text-[var(--color-text-muted)]">
+                  <FontAwesomeIcon icon={faShieldHalved} className="text-[0.6rem] text-[var(--color-amber)]" />
                   Tekrar
                 </label>
                 <input
@@ -327,7 +264,7 @@ const Register = () => {
                   className="hx-input rounded-sm font-mono"
                 />
                 {errors.confirmPassword && (
-                  <p className="font-mono text-[0.6rem] mt-[5px]" style={{ color: "#f87171" }}>
+                  <p className="font-mono text-[0.6rem] mt-[5px] text-red-400">
                     ! {errors.confirmPassword}
                   </p>
                 )}
@@ -339,13 +276,11 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="hx-btn-primary rounded-sm flex items-center justify-center gap-2.5"
+                className="hx-btn-primary rounded-sm flex items-center justify-center gap-2.5 border-[var(--color-amber-mid)] shadow-none"
                 style={{
                   background: isLoading
                     ? undefined
                     : "linear-gradient(135deg, #451a03 0%, #b45309 50%, #f59e0b 100%)",
-                  borderColor: "var(--color-amber-mid)",
-                  boxShadow: "none",
                 }}
                 onMouseEnter={(e) => {
                   if (!isLoading) {
@@ -365,7 +300,7 @@ const Register = () => {
                 ) : (
                   <>
                     <span>KAYIT OL</span>
-                    <FontAwesomeIcon icon={faArrowRight} style={{ fontSize: "0.8rem" }} />
+                    <FontAwesomeIcon icon={faArrowRight} className="text-[0.8rem]" />
                   </>
                 )}
               </button>
@@ -374,34 +309,19 @@ const Register = () => {
           </form>
 
           {/* Divider */}
-          <div
-            className="flex items-center gap-3"
-            style={{ margin: "1.5rem 0 1.25rem" }}
-          >
-            <div className="flex-1 h-px" style={{ background: "var(--color-border-dim)" }} />
-            <span className="font-mono text-[0.58rem] tracking-[0.1em]" style={{ color: "var(--color-text-dim)" }}>
+          <div className="flex items-center gap-3 my-6">
+            <div className="flex-1 h-px bg-[var(--color-border-dim)]" />
+            <span className="font-mono text-[0.58rem] tracking-[0.1em] text-[var(--color-text-dim)]">
               MEVCUT KULLANICI
             </span>
-            <div className="flex-1 h-px" style={{ background: "var(--color-border-dim)" }} />
+            <div className="flex-1 h-px bg-[var(--color-border-dim)]" />
           </div>
 
-          <p
-            className="font-body text-center text-[0.82rem] m-0"
-            style={{ color: "var(--color-text-muted)" }}
-          >
+          <p className="font-body text-center text-[0.82rem] m-0 text-[var(--color-text-muted)]">
             Zaten hesabınız var mı?{" "}
             <Link
               to="/login"
-              className="font-semibold no-underline tracking-[0.04em] transition-all duration-200"
-              style={{ color: "var(--color-cyan)" }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.color = "var(--color-cyan-bright)";
-                (e.target as HTMLElement).style.textShadow = "0 0 12px rgba(6,182,212,0.5)";
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.color = "var(--color-cyan)";
-                (e.target as HTMLElement).style.textShadow = "none";
-              }}
+              className="font-semibold no-underline tracking-[0.04em] transition-all duration-200 text-[var(--color-cyan)] hover:text-[var(--color-cyan-bright)] hover:[text-shadow:0_0_12px_rgba(6,182,212,0.5)]"
             >
               Giriş Yap
             </Link>
@@ -409,10 +329,7 @@ const Register = () => {
         </div>
 
         {/* Bottom meta */}
-        <div
-          className="font-mono animate-fade-in stagger-8 flex justify-between mt-4 text-[0.55rem] tracking-[0.1em]"
-          style={{ color: "var(--color-text-dim)", padding: "0 2px" }}
-        >
+        <div className="font-mono animate-fade-in stagger-8 flex justify-between mt-4 text-[0.55rem] tracking-[0.1em] text-[var(--color-text-dim)] px-0.5">
           <span>PCBUILDER © 2024</span>
           <span>v2.4.1</span>
         </div>

@@ -18,77 +18,41 @@ const LogoMark = () => (
 
 const Layout = ({ children }: PropsWithChildren) => {
   return (
-    <div className="min-h-screen flex flex-col relative" style={{ background: "var(--color-bg-base)" }}>
+    <div className="min-h-screen flex flex-col relative bg-[var(--color-bg-base)]">
       {/* Background circuit grid */}
-      <div
-        className="bg-circuit-lines fixed inset-0 pointer-events-none z-0"
-        style={{ opacity: 0.35 }}
-      />
+      <div className="bg-circuit-lines fixed inset-0 pointer-events-none z-0 opacity-35" />
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <header
-        className="animate-fade-in-down sticky top-0 z-[100] flex items-center justify-between"
-        style={{
-          padding: "0 1.5rem",
-          height: "56px",
-          background: "rgba(8,12,16,0.92)",
-          borderBottom: "1px solid var(--color-border-dim)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-        }}
+        className="animate-fade-in-down sticky top-0 z-[100] flex items-center justify-between px-6 h-14 bg-[rgba(8,12,16,0.92)] border-b border-[var(--color-border-dim)] backdrop-blur-[12px]"
       >
         {/* Top accent line */}
         <div
-          className="absolute top-0 left-0 right-0 h-px"
-          style={{
-            background: "linear-gradient(90deg, transparent 0%, var(--color-cyan) 30%, var(--color-cyan-bright) 50%, var(--color-cyan) 70%, transparent 100%)",
-            opacity: 0.6,
-          }}
+          className="absolute top-0 left-0 right-0 h-px opacity-60 bg-[linear-gradient(90deg,transparent_0%,var(--color-cyan)_30%,var(--color-cyan-bright)_50%,var(--color-cyan)_70%,transparent_100%)]"
         />
 
         {/* ── Brand ── */}
         <div className="flex items-center gap-2.5">
           <LogoMark />
           <div>
-            <div
-              className="font-display text-[1.1rem] font-bold tracking-[0.08em] leading-none"
-              style={{ color: "var(--color-text-bright)" }}
-            >
-              PC<span style={{ color: "var(--color-cyan)" }}>BUILD</span>ER
+            <div className="font-display text-[1.1rem] font-bold tracking-[0.08em] leading-none text-[var(--color-text-bright)]">
+              PC<span className="text-[var(--color-cyan)]">BUILD</span>ER
             </div>
-            <div
-              className="font-mono text-[0.5rem] tracking-[0.2em] uppercase"
-              style={{ color: "var(--color-text-dim)" }}
-            >
+            <div className="font-mono text-[0.5rem] tracking-[0.2em] uppercase text-[var(--color-text-dim)]">
               Configurator
             </div>
           </div>
 
           {/* version chip */}
           <div
-            className="font-mono text-[0.52rem] tracking-[0.1em]"
-            style={{
-              color: "var(--color-text-dim)",
-              background: "var(--color-bg-surface)",
-              border: "1px solid var(--color-border-dim)",
-              padding: "2px 6px",
-              alignSelf: "flex-end",
-              marginBottom: "1px",
-            }}
+            className="font-mono text-[0.52rem] tracking-[0.1em] text-[var(--color-text-dim)] bg-[var(--color-bg-surface)] border border-[var(--color-border-dim)] py-0.5 px-1.5 self-end mb-px"
           >
             v2.4
           </div>
         </div>
 
         {/* ── Nav middle (decorative status indicators) ── */}
-        <div
-          className="flex items-center absolute"
-          style={{
-            gap: "20px",
-            left: "50%",
-            transform: "translateX(-50%)",
-          }}
-        >
+        <div className="flex items-center absolute left-1/2 -translate-x-1/2 gap-5">
           {[
             { label: "CPU", status: "ONLINE" },
             { label: "GPU", status: "ONLINE" },
@@ -96,18 +60,13 @@ const Layout = ({ children }: PropsWithChildren) => {
           ].map((item) => (
             <div
               key={item.label}
-              className="font-mono flex items-center text-[0.58rem] tracking-[0.1em]"
-              style={{ gap: "5px", color: "var(--color-text-dim)" }}
+              className="font-mono flex items-center text-[0.58rem] tracking-[0.1em] gap-[5px] text-[var(--color-text-dim)]"
             >
               <div
-                className="w-[5px] h-[5px] rounded-full"
-                style={{
-                  background: "var(--color-success)",
-                  boxShadow: "0 0 5px rgba(16,185,129,0.8)",
-                }}
+                className="w-[5px] h-[5px] rounded-full bg-[var(--color-success)] shadow-[0_0_5px_rgba(16,185,129,0.8)]"
               />
               {item.label}
-              <span style={{ color: "var(--color-success)", opacity: 0.7 }}>{item.status}</span>
+              <span className="text-[var(--color-success)] opacity-70">{item.status}</span>
             </div>
           ))}
         </div>
@@ -117,31 +76,20 @@ const Layout = ({ children }: PropsWithChildren) => {
       </header>
 
       {/* ── Main content ─────────────────────────────────────────────────────── */}
-      <main className="flex-1 relative z-[1]" style={{ padding: "2rem 1.5rem" }}>
+      <main className="flex-1 relative z-[1] p-8 px-6">
         {children}
       </main>
 
       {/* ── Footer bar ───────────────────────────────────────────────────────── */}
-      <footer
-        className="relative z-[1] flex items-center justify-between"
-        style={{
-          borderTop: "1px solid var(--color-border-dim)",
-          padding: "8px 1.5rem",
-          background: "rgba(8,12,16,0.8)",
-        }}
-      >
-        <span
-          className="font-mono text-[0.55rem] tracking-[0.1em]"
-          style={{ color: "var(--color-text-dim)" }}
-        >
+      <footer className="relative z-[1] flex items-center justify-between border-t border-[var(--color-border-dim)] py-2 px-6 bg-[rgba(8,12,16,0.8)]">
+        <span className="font-mono text-[0.55rem] tracking-[0.1em] text-[var(--color-text-dim)]">
           PCBUILDER © 2024 · HARDWARE CONFIGURATOR PLATFORM
         </span>
         <div className="flex gap-4">
           {["SYS:OK", "NET:CONNECTED", "DB:ONLINE"].map((s) => (
             <span
               key={s}
-              className="font-mono text-[0.52rem] tracking-[0.08em]"
-              style={{ color: "var(--color-text-dim)" }}
+              className="font-mono text-[0.52rem] tracking-[0.08em] text-[var(--color-text-dim)]"
             >
               {s}
             </span>

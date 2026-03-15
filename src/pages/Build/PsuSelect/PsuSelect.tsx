@@ -27,33 +27,16 @@ const RangeRow = ({
 }) => {
   const fmt = format ?? ((n: number) => String(n));
   return (
-    <div style={{ marginBottom: "1rem" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "6px",
-        }}
-      >
-        <span
-          className="font-mono"
-          style={{
-            fontSize: "0.62rem",
-            letterSpacing: "0.1em",
-            color: "var(--color-text-muted)",
-            textTransform: "uppercase",
-          }}
-        >
+    <div className="mb-4">
+      <div className="flex justify-between mb-[6px]">
+        <span className="font-mono text-[0.62rem] tracking-[0.1em] text-[var(--color-text-muted)] uppercase">
           {label}
         </span>
-        <span
-          className="font-mono"
-          style={{ fontSize: "0.62rem", color: "var(--color-cyan)" }}
-        >
+        <span className="font-mono text-[0.62rem] text-[var(--color-cyan)]">
           {fmt(value[0])} — {fmt(value[1])}
         </span>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+      <div className="flex flex-col gap-1">
         <input
           type="range"
           min={min}
@@ -63,7 +46,7 @@ const RangeRow = ({
             const v = Number(e.target.value);
             if (v <= value[1]) onChange([v, value[1]]);
           }}
-          style={{ width: "100%", accentColor: "var(--color-cyan)", height: "3px" }}
+          className="w-full h-[3px] accent-[var(--color-cyan)]"
         />
         <input
           type="range"
@@ -74,7 +57,7 @@ const RangeRow = ({
             const v = Number(e.target.value);
             if (v >= value[0]) onChange([value[0], v]);
           }}
-          style={{ width: "100%", accentColor: "var(--color-cyan)", height: "3px" }}
+          className="w-full h-[3px] accent-[var(--color-cyan)]"
         />
       </div>
     </div>
@@ -92,47 +75,38 @@ const CheckGroup = ({
   selected: string[];
   onToggle: (v: string) => void;
 }) => (
-  <div style={{ marginBottom: "1rem" }}>
-    <span
-      className="font-mono"
-      style={{
-        fontSize: "0.62rem",
-        letterSpacing: "0.1em",
-        color: "var(--color-text-muted)",
-        textTransform: "uppercase",
-        display: "block",
-        marginBottom: "6px",
-      }}
-    >
+  <div className="mb-4">
+    <span className="font-mono block text-[0.62rem] tracking-[0.1em] text-[var(--color-text-muted)] uppercase mb-[6px]">
       {label}
     </span>
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+    <div className="flex flex-wrap gap-[6px]">
       {options.map((opt) => {
         const active = selected.includes(opt);
         return (
           <button
             key={opt}
             onClick={() => onToggle(opt)}
-            className="font-mono"
-            style={{
-              fontSize: "0.6rem",
-              letterSpacing: "0.08em",
-              padding: "3px 10px",
-              background: active
-                ? "rgba(6,182,212,0.15)"
-                : "var(--color-bg-raised)",
-              border: `1px solid ${
-                active ? "var(--color-cyan)" : "var(--color-border-dim)"
-              }`,
-              color: active ? "var(--color-cyan)" : "var(--color-text-muted)",
-              cursor: "pointer",
-              transition: "all 0.15s",
-            }}
+            className={`font-mono text-[0.6rem] tracking-[0.08em] py-[3px] px-[10px] cursor-pointer transition-all duration-150 ${
+              active
+                ? "bg-[rgba(6,182,212,0.15)] border border-[var(--color-cyan)] text-[var(--color-cyan)]"
+                : "bg-[var(--color-bg-raised)] border border-[var(--color-border-dim)] text-[var(--color-text-muted)]"
+            }`}
           >
             {opt}
           </button>
         );
       })}
+    </div>
+  </div>
+);
+
+const SpecItem = ({ label, value }: { label: string; value: string }) => (
+  <div className="bg-[var(--color-bg-elevated)] border border-[var(--color-border-dim)] py-1.5 px-2">
+    <div className="font-mono text-[0.52rem] tracking-[0.1em] text-[var(--color-text-dim)] uppercase mb-0.5">
+      {label}
+    </div>
+    <div className="font-body text-[0.75rem] text-[var(--color-text-primary)] font-medium">
+      {value}
     </div>
   </div>
 );
@@ -152,200 +126,71 @@ const PsuSelect = () => {
     handleConfirm,
   } = usePsuSelect();
 
-  const dropdownStyle: React.CSSProperties = {
-    borderRadius: "2px",
-    fontSize: "0.78rem",
-    cursor: "pointer",
-    appearance: "none" as const,
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2306b6d4' stroke-width='1.5' fill='none' stroke-linecap='square'/%3E%3C/svg%3E")`,
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "right 14px center",
-    paddingRight: "2.5rem",
-  };
-
   return (
     <Layout>
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-        <div className="animate-fade-in-down" style={{ marginBottom: "1.5rem" }}>
-          <div
-            className="font-mono"
-            style={{
-              fontSize: "0.62rem",
-              letterSpacing: "0.2em",
-              color: "var(--color-cyan)",
-              textTransform: "uppercase",
-              marginBottom: "4px",
-            }}
-          >
+      <div className="max-w-[1100px] mx-auto">
+        <div className="animate-fade-in-down mb-6">
+          <div className="font-mono text-[0.62rem] tracking-[0.2em] text-[var(--color-cyan)] uppercase mb-1">
             // ADIM 5 / 7 · BİLEŞEN SEÇİMİ
           </div>
-          <h1
-            className="font-display"
-            style={{
-              fontSize: "1.8rem",
-              fontWeight: 700,
-              letterSpacing: "0.04em",
-              color: "var(--color-text-bright)",
-              textTransform: "uppercase",
-              margin: 0,
-              lineHeight: 1.1,
-            }}
-          >
+          <h1 className="font-display text-[1.8rem] font-bold tracking-[0.04em] text-[var(--color-text-bright)] uppercase m-0 leading-[1.1]">
             Güç Kaynağı{" "}
-            <span
-              style={{
-                color: "var(--color-cyan)",
-                textShadow: "0 0 20px rgba(6,182,212,0.4)",
-              }}
-            >
+            <span className="text-[var(--color-cyan)] [text-shadow:0_0_20px_rgba(6,182,212,0.4)]">
               Seç
             </span>
           </h1>
         </div>
 
         {isLoading || !filters ? (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "10px",
-              padding: "4rem 0",
-            }}
-          >
+          <div className="flex items-center justify-center gap-[10px] py-16">
             <FontAwesomeIcon
               icon={faSpinner}
-              className="animate-spin-slow"
-              style={{ color: "var(--color-cyan)" }}
+              className="animate-spin-slow text-[var(--color-cyan)]"
             />
-            <span
-              className="font-mono"
-              style={{
-                fontSize: "0.75rem",
-                letterSpacing: "0.1em",
-                color: "var(--color-text-muted)",
-              }}
-            >
+            <span className="font-mono text-[0.75rem] tracking-[0.1em] text-[var(--color-text-muted)]">
               YÜKLENİYOR...
             </span>
           </div>
         ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "280px 1fr",
-              gap: "1.5rem",
-              alignItems: "start",
-            }}
-          >
+          <div className="grid grid-cols-[280px_1fr] gap-6 items-start">
             {/* ── Filters sidebar ── */}
-            <div
-              className="panel accent-top animate-fade-in-up"
-              style={{ padding: "1.25rem" }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: "1.25rem",
-                }}
-              >
-                <span
-                  className="font-display"
-                  style={{
-                    fontSize: "0.85rem",
-                    fontWeight: 600,
-                    letterSpacing: "0.1em",
-                    color: "var(--color-text-bright)",
-                    textTransform: "uppercase",
-                  }}
-                >
+            <div className="panel accent-top animate-fade-in-up p-5">
+              <div className="flex items-center justify-between mb-5">
+                <span className="font-display text-[0.85rem] font-semibold tracking-[0.1em] text-[var(--color-text-bright)] uppercase">
                   Filtreler
                 </span>
                 <button
                   onClick={resetFilters}
-                  className="font-mono"
-                  style={{
-                    fontSize: "0.58rem",
-                    letterSpacing: "0.08em",
-                    color: "var(--color-text-dim)",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
+                  className="font-mono text-[0.58rem] tracking-[0.08em] text-[var(--color-text-dim)] bg-transparent border-0 cursor-pointer flex items-center gap-1"
                 >
-                  <FontAwesomeIcon
-                    icon={faRotateLeft}
-                    style={{ fontSize: "0.55rem" }}
-                  />{" "}
+                  <FontAwesomeIcon icon={faRotateLeft} className="text-[0.55rem]" />{" "}
                   Sıfırla
                 </button>
               </div>
 
               {minWattage > 0 && (
-                <div
-                  style={{
-                    marginBottom: "1rem",
-                    padding: "8px 10px",
-                    background: "rgba(6,182,212,0.08)",
-                    border: "1px solid rgba(6,182,212,0.3)",
-                  }}
-                >
-                  <div
-                    className="font-mono"
-                    style={{
-                      fontSize: "0.58rem",
-                      letterSpacing: "0.08em",
-                      color: "var(--color-text-dim)",
-                      textTransform: "uppercase",
-                      marginBottom: "2px",
-                    }}
-                  >
+                <div className="mb-4 py-2 px-[10px] bg-[rgba(6,182,212,0.08)] border border-[rgba(6,182,212,0.3)]">
+                  <div className="font-mono text-[0.58rem] tracking-[0.08em] text-[var(--color-text-dim)] uppercase mb-0.5">
                     Önerilen Minimum
                   </div>
-                  <div
-                    className="font-display"
-                    style={{
-                      fontSize: "1rem",
-                      fontWeight: 700,
-                      color: "var(--color-cyan)",
-                    }}
-                  >
+                  <div className="font-display text-[1rem] font-bold text-[var(--color-cyan)]">
                     {minWattage}W
                   </div>
                 </div>
               )}
 
-              <div style={{ marginBottom: "1rem" }}>
-                <div style={{ position: "relative" }}>
-                  <FontAwesomeIcon
-                    icon={faSearch}
-                    style={{
-                      position: "absolute",
-                      left: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      fontSize: "0.65rem",
-                      color: "var(--color-text-dim)",
-                    }}
-                  />
-                  <input
-                    type="text"
-                    value={filters.search}
-                    onChange={(e) => updateFilter("search", e.target.value)}
-                    placeholder="Ara..."
-                    className="hx-input font-mono"
-                    style={{
-                      paddingLeft: "28px",
-                      fontSize: "0.75rem",
-                      borderRadius: "2px",
-                    }}
-                  />
-                </div>
+              <div className="mb-4 relative">
+                <FontAwesomeIcon
+                  icon={faSearch}
+                  className="absolute left-[10px] top-1/2 -translate-y-1/2 text-[0.65rem] text-[var(--color-text-dim)]"
+                />
+                <input
+                  type="text"
+                  value={filters.search}
+                  onChange={(e) => updateFilter("search", e.target.value)}
+                  placeholder="Ara..."
+                  className="hx-input font-mono pl-7 text-[0.75rem] rounded-[2px]"
+                />
               </div>
 
               <CheckGroup
@@ -377,51 +222,25 @@ const PsuSelect = () => {
             </div>
 
             {/* ── Right panel ── */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <div
-                className="panel accent-top corner-brackets animate-fade-in-up stagger-2"
-                style={{ padding: "1.5rem" }}
-              >
-                <label
-                  className="font-mono"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    fontSize: "0.65rem",
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    color: "var(--color-text-muted)",
-                    marginBottom: "8px",
-                  }}
-                >
-                  <FontAwesomeIcon
-                    icon={faBolt}
-                    style={{ fontSize: "0.6rem", color: "var(--color-cyan)" }}
-                  />
+            <div className="flex flex-col gap-4">
+              <div className="panel accent-top corner-brackets animate-fade-in-up stagger-2 p-6">
+                <label className="font-mono flex items-center gap-[6px] text-[0.65rem] tracking-[0.14em] uppercase text-[var(--color-text-muted)] mb-2">
+                  <FontAwesomeIcon icon={faBolt} className="text-[0.6rem] text-[var(--color-cyan)]" />
                   Güç Kaynağı — {filtered.length} sonuç
                 </label>
                 <select
                   value={selected?.id ?? ""}
                   onChange={(e) => handleSelectById(e.target.value)}
-                  className="hx-input font-mono"
-                  style={dropdownStyle}
+                  className="hx-input hx-select font-mono"
                 >
-                  <option
-                    value=""
-                    disabled
-                    style={{ background: "var(--color-bg-deep)" }}
-                  >
+                  <option value="" disabled style={{ background: "var(--color-bg-deep)" }}>
                     — Güç kaynağı seçin —
                   </option>
                   {filtered.map((item) => (
                     <option
                       key={item.id}
                       value={item.id}
-                      style={{
-                        background: "var(--color-bg-deep)",
-                        color: "var(--color-text-bright)",
-                      }}
+                      style={{ background: "var(--color-bg-deep)", color: "var(--color-text-bright)" }}
                     >
                       {item.brand} {item.model} — {item.wattage}W ·{" "}
                       {item.efficiencyRating} · {item.modular}
@@ -430,187 +249,67 @@ const PsuSelect = () => {
                 </select>
 
                 {selected && (
-                  <div
-                    className="animate-fade-in"
-                    style={{
-                      marginTop: "1rem",
-                      background: "var(--color-bg-raised)",
-                      border: "1px solid var(--color-cyan-dim)",
-                      borderLeft: "2px solid var(--color-cyan)",
-                      padding: "1rem",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "14px",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "88px",
-                          height: "88px",
-                          flexShrink: 0,
-                          background: "rgba(0,0,0,0.5)",
-                          border: "1px solid rgba(6,182,212,0.35)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          position: "relative",
-                          overflow: "hidden",
-                          boxShadow: "inset 0 0 16px rgba(6,182,212,0.08)",
-                        }}
-                      >
+                  <div className="animate-fade-in mt-4 bg-[var(--color-bg-raised)] border border-[var(--color-cyan-dim)] border-l-2 border-l-[var(--color-cyan)] p-4">
+                    <div className="flex items-center gap-[14px] mb-[10px]">
+                      <div className="w-[88px] h-[88px] shrink-0 bg-[rgba(0,0,0,0.5)] border border-[rgba(6,182,212,0.35)] flex items-center justify-center relative overflow-hidden shadow-[inset_0_0_16px_rgba(6,182,212,0.08)]">
                         {selected.imageUrl ? (
                           <>
                             <img
                               src={selected.imageUrl}
                               alt={`${selected.brand} ${selected.model}`}
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "contain",
-                                padding: "8px",
-                              }}
+                              className="w-full h-full object-contain p-2"
                               onError={(e) => {
-                                (e.currentTarget as HTMLImageElement).style.display =
-                                  "none";
-                                (
-                                  e.currentTarget
-                                    .nextSibling as HTMLElement
-                                ).style.display = "flex";
+                                (e.currentTarget as HTMLImageElement).style.display = "none";
+                                (e.currentTarget.nextSibling as HTMLElement).style.display = "flex";
                               }}
                             />
                             <div
-                              style={{
-                                display: "none",
-                                position: "absolute",
-                                inset: 0,
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
+                              className="absolute inset-0 items-center justify-center"
+                              style={{ display: "none" }}
                             >
                               <FontAwesomeIcon
                                 icon={faBolt}
-                                style={{
-                                  color: "var(--color-cyan)",
-                                  fontSize: "1.8rem",
-                                  filter:
-                                    "drop-shadow(0 0 6px rgba(6,182,212,0.8))",
-                                }}
+                                className="text-[var(--color-cyan)] text-[1.8rem] [filter:drop-shadow(0_0_6px_rgba(6,182,212,0.8))]"
                               />
                             </div>
                           </>
                         ) : (
                           <FontAwesomeIcon
                             icon={faBolt}
-                            style={{
-                              color: "var(--color-cyan)",
-                              fontSize: "1.8rem",
-                              filter:
-                                "drop-shadow(0 0 6px rgba(6,182,212,0.8))",
-                            }}
+                            className="text-[var(--color-cyan)] text-[1.8rem] [filter:drop-shadow(0_0_6px_rgba(6,182,212,0.8))]"
                           />
                         )}
                       </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div
-                          className="font-body"
-                          style={{
-                            fontSize: "0.9rem",
-                            fontWeight: 600,
-                            color: "var(--color-text-bright)",
-                          }}
-                        >
+                      <div className="flex-1 min-w-0">
+                        <div className="font-body text-[0.9rem] font-semibold text-[var(--color-text-bright)]">
                           {selected.brand} {selected.model}
                         </div>
-                        <div
-                          className="font-mono"
-                          style={{
-                            fontSize: "0.58rem",
-                            color: "var(--color-cyan)",
-                            letterSpacing: "0.08em",
-                          }}
-                        >
+                        <div className="font-mono text-[0.58rem] text-[var(--color-cyan)] tracking-[0.08em]">
                           {selected.wattage}W · {selected.efficiencyRating}
                         </div>
                       </div>
                     </div>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(3, 1fr)",
-                        gap: "8px",
-                      }}
-                    >
+                    <div className="grid grid-cols-3 gap-2">
                       {[
                         { label: "Watt", value: `${selected.wattage}W` },
-                        {
-                          label: "Verimlilik",
-                          value: selected.efficiencyRating,
-                        },
+                        { label: "Verimlilik", value: selected.efficiencyRating },
                         { label: "Modüler", value: selected.modular },
                       ].map(({ label, value }) => (
-                        <div
-                          key={label}
-                          style={{
-                            background: "var(--color-bg-elevated)",
-                            border: "1px solid var(--color-border-dim)",
-                            padding: "6px 8px",
-                          }}
-                        >
-                          <div
-                            className="font-mono"
-                            style={{
-                              fontSize: "0.52rem",
-                              letterSpacing: "0.1em",
-                              color: "var(--color-text-dim)",
-                              textTransform: "uppercase",
-                              marginBottom: "2px",
-                            }}
-                          >
-                            {label}
-                          </div>
-                          <div
-                            className="font-body"
-                            style={{
-                              fontSize: "0.75rem",
-                              color: "var(--color-text-primary)",
-                              fontWeight: 500,
-                            }}
-                          >
-                            {value}
-                          </div>
-                        </div>
+                        <SpecItem key={label} label={label} value={value} />
                       ))}
                     </div>
                   </div>
                 )}
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <div className="flex justify-end">
                 <button
                   onClick={handleConfirm}
                   disabled={!selected}
-                  className="hx-btn-primary"
-                  style={{
-                    width: "auto",
-                    padding: "10px 28px",
-                    fontSize: "0.78rem",
-                    letterSpacing: "0.12em",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    borderRadius: "0",
-                  }}
+                  className="hx-btn-primary w-auto py-[10px] px-7 text-[0.78rem] tracking-[0.12em] flex items-center gap-[10px] rounded-none"
                 >
                   <span>DEVAM ET</span>
-                  <FontAwesomeIcon
-                    icon={faArrowRight}
-                    style={{ fontSize: "0.8rem" }}
-                  />
+                  <FontAwesomeIcon icon={faArrowRight} className="text-[0.8rem]" />
                 </button>
               </div>
             </div>

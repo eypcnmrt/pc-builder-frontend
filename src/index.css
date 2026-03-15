@@ -362,6 +362,18 @@ body {
   text-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
 }
 
+/* ─── Custom Select Dropdown ────────────────────────────────────────────────── */
+.hx-select {
+  border-radius: 2px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2306b6d4' stroke-width='1.5' fill='none' stroke-linecap='square'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 2.5rem;
+}
+
 /* ─── Scrollbar Styling ─────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-bg-base); }
