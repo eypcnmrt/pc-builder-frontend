@@ -1,6 +1,17 @@
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
-import { Login, Register, Dashboard, ProcessorSelect } from "./pages";
+import {
+  Login,
+  Register,
+  Dashboard,
+  ProcessorSelect,
+  RamSelect,
+  StorageSelect,
+  GpuSelect,
+  PsuSelect,
+  CoolerSelect,
+  CaseSelect,
+} from "./pages";
 import { getToken } from "./utils/token";
 
 type PrivateRouteProps = {
@@ -29,6 +40,54 @@ const Router = () => {
         element={
           <PrivateRoute>
             <ProcessorSelect />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/build/ram"
+        element={
+          <PrivateRoute>
+            <RamSelect />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/build/storage"
+        element={
+          <PrivateRoute>
+            <StorageSelect />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/build/gpu"
+        element={
+          <PrivateRoute>
+            <GpuSelect />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/build/psu"
+        element={
+          <PrivateRoute>
+            <PsuSelect />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/build/cooler"
+        element={
+          <PrivateRoute>
+            <CoolerSelect />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/build/case"
+        element={
+          <PrivateRoute>
+            <CaseSelect />
           </PrivateRoute>
         }
       />

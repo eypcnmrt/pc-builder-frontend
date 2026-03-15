@@ -248,13 +248,40 @@ const ProcessorSelect = () => {
                 {/* Selected processor detail */}
                 {selected && (
                   <div className="animate-fade-in" style={{ marginTop: "1rem", background: "var(--color-bg-raised)", border: "1px solid var(--color-cyan-dim)", borderLeft: "2px solid var(--color-cyan)", padding: "1rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
-                      <FontAwesomeIcon icon={faMicrochip} style={{ color: "var(--color-cyan)", fontSize: "1.1rem", filter: "drop-shadow(0 0 4px rgba(6,182,212,0.8))" }} />
-                      <div>
-                        <div className="font-body" style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--color-text-bright)" }}>{selected.brand} {selected.model}</div>
-                        <div className="font-mono" style={{ fontSize: "0.58rem", color: "var(--color-cyan)", letterSpacing: "0.08em" }}>{selected.series} · {selected.architecture}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "10px" }}>
+                      {/* Product image / icon */}
+                      <div style={{
+                        width: "88px", height: "88px", flexShrink: 0,
+                        background: "rgba(0,0,0,0.5)",
+                        border: "1px solid rgba(6,182,212,0.35)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        position: "relative", overflow: "hidden",
+                        boxShadow: "inset 0 0 16px rgba(6,182,212,0.08)",
+                      }}>
+                        {selected.imageUrl ? (
+                          <>
+                            <img
+                              src={selected.imageUrl}
+                              alt={`${selected.brand} ${selected.model}`}
+                              style={{ width: "100%", height: "100%", objectFit: "contain", padding: "8px" }}
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).style.display = "none";
+                                (e.currentTarget.nextSibling as HTMLElement).style.display = "flex";
+                              }}
+                            />
+                            <div style={{ display: "none", position: "absolute", inset: 0, alignItems: "center", justifyContent: "center" }}>
+                              <FontAwesomeIcon icon={faMicrochip} style={{ color: "var(--color-cyan)", fontSize: "1.8rem", filter: "drop-shadow(0 0 6px rgba(6,182,212,0.8))" }} />
+                            </div>
+                          </>
+                        ) : (
+                          <FontAwesomeIcon icon={faMicrochip} style={{ color: "var(--color-cyan)", fontSize: "1.8rem", filter: "drop-shadow(0 0 6px rgba(6,182,212,0.8))" }} />
+                        )}
                       </div>
-                      <div className="font-display" style={{ marginLeft: "auto", fontSize: "1.1rem", fontWeight: 700, color: "var(--color-cyan)" }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div className="font-body" style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--color-text-bright)" }}>{selected.brand} {selected.model}</div>
+                        <div className="font-mono" style={{ fontSize: "0.58rem", color: "var(--color-cyan)", letterSpacing: "0.08em" }}>{selected.series}</div>
+                      </div>
+                      <div className="font-display" style={{ marginLeft: "auto", fontSize: "1.1rem", fontWeight: 700, color: "var(--color-cyan)", flexShrink: 0 }}>
                         {selected.price.toLocaleString("tr-TR")} ₺
                       </div>
                     </div>
@@ -267,7 +294,6 @@ const ProcessorSelect = () => {
                         { label: "L3 Önbellek", value: `${selected.l3Cache} MB` },
                         { label: "Bellek", value: selected.memoryType },
                         { label: "iGPU", value: selected.integratedGraphics ? "Var" : "Yok" },
-                        { label: "Mimari", value: selected.architecture },
                       ].map(({ label, value }) => (
                         <div key={label} style={{ background: "var(--color-bg-elevated)", border: "1px solid var(--color-border-dim)", padding: "6px 8px" }}>
                           <div className="font-mono" style={{ fontSize: "0.52rem", letterSpacing: "0.1em", color: "var(--color-text-dim)", textTransform: "uppercase", marginBottom: "2px" }}>{label}</div>
@@ -311,9 +337,36 @@ const ProcessorSelect = () => {
                       {/* Selected motherboard detail */}
                       {selectedMotherboard && (
                         <div className="animate-fade-in" style={{ marginTop: "1rem", background: "var(--color-bg-raised)", border: "1px solid var(--color-cyan-dim)", borderLeft: "2px solid var(--color-cyan)", padding: "1rem" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
-                            <FontAwesomeIcon icon={faServer} style={{ color: "var(--color-cyan)", fontSize: "1.1rem", filter: "drop-shadow(0 0 4px rgba(6,182,212,0.8))" }} />
-                            <div>
+                          <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "10px" }}>
+                            {/* Product image / icon */}
+                            <div style={{
+                              width: "88px", height: "88px", flexShrink: 0,
+                              background: "rgba(0,0,0,0.5)",
+                              border: "1px solid rgba(6,182,212,0.35)",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              position: "relative", overflow: "hidden",
+                              boxShadow: "inset 0 0 16px rgba(6,182,212,0.08)",
+                            }}>
+                              {selectedMotherboard.imageUrl ? (
+                                <>
+                                  <img
+                                    src={selectedMotherboard.imageUrl}
+                                    alt={`${selectedMotherboard.brand} ${selectedMotherboard.model}`}
+                                    style={{ width: "100%", height: "100%", objectFit: "contain", padding: "8px" }}
+                                    onError={(e) => {
+                                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                                      (e.currentTarget.nextSibling as HTMLElement).style.display = "flex";
+                                    }}
+                                  />
+                                  <div style={{ display: "none", position: "absolute", inset: 0, alignItems: "center", justifyContent: "center" }}>
+                                    <FontAwesomeIcon icon={faServer} style={{ color: "var(--color-cyan)", fontSize: "1.8rem", filter: "drop-shadow(0 0 6px rgba(6,182,212,0.8))" }} />
+                                  </div>
+                                </>
+                              ) : (
+                                <FontAwesomeIcon icon={faServer} style={{ color: "var(--color-cyan)", fontSize: "1.8rem", filter: "drop-shadow(0 0 6px rgba(6,182,212,0.8))" }} />
+                              )}
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
                               <div className="font-body" style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--color-text-bright)" }}>{selectedMotherboard.brand} {selectedMotherboard.model}</div>
                               <div className="font-mono" style={{ fontSize: "0.58rem", color: "var(--color-cyan)", letterSpacing: "0.08em" }}>{selectedMotherboard.chipset} · {selectedMotherboard.formFactor}</div>
                             </div>

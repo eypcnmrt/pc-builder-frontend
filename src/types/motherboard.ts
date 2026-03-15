@@ -10,6 +10,8 @@ export interface Motherboard {
   maxRamGb: number;
   ramSlots: number;
   supportedRamType: string;
+  price?: number;
+  imageUrl?: string;
 }
 
 export type { PagedData };

@@ -6,8 +6,7 @@ export const fetchCompatibleMotherboards = async (
   socket: string,
   page = 1,
   pageSize = 100
-) => {
-  return await instance.get<PagedData<Motherboard>>(
-    `Motherboard/compatible?socket=${socket}&page=${page}&pageSize=${pageSize}`
-  );
-};
+) =>
+  instance.get<PagedData<Motherboard>>("Motherboard/compatible", {
+    params: { socket, page, pageSize },
+  });

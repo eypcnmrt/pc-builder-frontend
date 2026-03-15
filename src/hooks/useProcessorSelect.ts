@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProcessors } from "../service/processor";
 import { fetchCompatibleMotherboards } from "../service/motherboard";
+import { saveBuildState } from "../utils/buildState";
 import type { Processor } from "../types/processor";
 import type { Motherboard } from "../types/motherboard";
 
@@ -100,15 +101,19 @@ const useProcessorSelect = () => {
     const load = async () => {
       setIsMotherboardLoading(true);
       setSelectedMotherboard(null);
-      const data = await fetchCompatibleMotherboards(selected.socket);
-      if (data && data.items.length > 0) {
-        setMotherboards(data.items);
-        setMotherboardFilters(defaultMotherboardFilters(data.items));
-      } else {
-        setMotherboards([]);
-        setMotherboardFilters(null);
+      try {
+        const data = await fetchCompatibleMotherboards(selected.socket);
+        const items = data?.items ?? [];
+        if (items.length > 0) {
+          setMotherboards(items);
+          setMotherboardFilters(defaultMotherboardFilters(items));
+        } else {
+          setMotherboards([]);
+          setMotherboardFilters(null);
+        }
+      } finally {
+        setIsMotherboardLoading(false);
       }
-      setIsMotherboardLoading(false);
     };
     load();
   }, [selected]);
@@ -144,7 +149,7 @@ const useProcessorSelect = () => {
   const filtered = useMemo(() => {
     if (!filters) return processors;
     return processors.filter((p) => {
-      if (filters.search && !`${p.brand} ${p.model} ${p.series} ${p.architecture}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
+      if (filters.search && !`${p.brand} ${p.model} ${p.series}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
       if (filters.brands.length && !filters.brands.includes(p.brand)) return false;
       if (filters.sockets.length && !filters.sockets.includes(p.socket)) return false;
       if (filters.memoryTypes.length && !filters.memoryTypes.includes(p.memoryType)) return false;
@@ -221,7 +226,15 @@ const useProcessorSelect = () => {
 
   const handleConfirm = () => {
     if (!selected || !selectedMotherboard) return;
-    navigate("/dashboard");
+    saveBuildState({
+      processorId: selected.id,
+      processorSocket: selected.socket,
+      processorTdp: selected.tdp,
+      motherboardId: selectedMotherboard.id,
+      motherboardFormFactor: selectedMotherboard.formFactor,
+      motherboardRamType: selectedMotherboard.supportedRamType,
+    });
+    navigate("/build/ram");
   };
 
   return {

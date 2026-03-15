@@ -83,4 +83,16 @@ const del = async <T>(url: string, data?: unknown): Promise<T | null> => {
   }
 };
 
-export default { get, post, put, del };
+import type { PagedData } from "../types/processor";
+
+const getOData = <T>(
+  resource: string,
+  page = 1,
+  pageSize = 100,
+  odataFilter?: string
+): Promise<PagedData<T> | null> =>
+  get<PagedData<T>>(`${resource}/OData`, {
+    params: { page, pageSize, ...(odataFilter ? { $filter: odataFilter } : {}) },
+  });
+
+export default { get, post, put, del, getOData };

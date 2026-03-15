@@ -3,7 +3,6 @@ export interface Processor {
   brand: string;
   model: string;
   series: string;
-  architecture: string;
   socket: string;
   cores: number;
   threads: number;
@@ -14,6 +13,7 @@ export interface Processor {
   memoryType: string;
   integratedGraphics: boolean;
   price: number;
+  imageUrl?: string;
 }
 
 export interface PagedData<T> {
