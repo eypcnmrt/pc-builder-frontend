@@ -3,153 +3,103 @@ import { Link } from "react-router-dom";
 import {
   faSpinner,
   faTriangleExclamation,
-  faUser,
-  faEnvelope,
-  faLock,
-  faShieldHalved,
-  faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useRegister from "../../hooks/useRegister";
 
-/* ─── Logo mark (shared aesthetic) ────────────────────────────────────────── */
-const LogoMark = () => (
-  <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="36" height="36" rx="4" fill="#0d1117" />
-    <rect x="0.5" y="0.5" width="35" height="35" rx="3.5" stroke="#06b6d4" strokeOpacity="0.6" />
-    <path d="M6 18H14M22 18H30" stroke="#06b6d4" strokeWidth="1.5" strokeLinecap="square" />
-    <path d="M18 6V14M18 22V30" stroke="#06b6d4" strokeWidth="1.5" strokeLinecap="square" />
-    <path d="M10 10H14V14H10V10Z" fill="none" stroke="#f59e0b" strokeWidth="1.2" />
-    <path d="M22 10H26V14H22V10Z" fill="none" stroke="#06b6d4" strokeWidth="1.2" />
-    <path d="M10 22H14V26H10V22Z" fill="none" stroke="#06b6d4" strokeWidth="1.2" />
-    <rect x="15" y="15" width="6" height="6" fill="#06b6d4" fillOpacity="0.9" rx="1" />
+/* ─── GPU / PCB Illustration ─────────────────────────────────────────────── */
+const GpuIllustration = () => (
+  <svg
+    width="260"
+    height="180"
+    viewBox="0 0 260 180"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    {/* PCB body */}
+    <rect x="10" y="20" width="240" height="130" rx="6" fill="#07090e" stroke="#06b6d4" strokeWidth="1.5" />
+
+    {/* PCIe gold contacts at bottom */}
+    {Array.from({ length: 22 }, (_, i) => (
+      <rect key={`contact-${i}`} x={20 + i * 10} y={140} width="5" height="14" rx="1"
+        fill={i % 3 === 0 ? "rgba(245,158,11,0.6)" : "rgba(6,182,212,0.35)"} />
+    ))}
+
+    {/* Heatsink fins on top */}
+    {Array.from({ length: 12 }, (_, i) => (
+      <rect key={`fin-${i}`} x={50 + i * 14} y={20} width="8" height="28" rx="1"
+        fill="rgba(6,182,212,0.08)" stroke="rgba(6,182,212,0.2)" strokeWidth="1" />
+    ))}
+
+    {/* GPU die (large chip) */}
+    <rect x="80" y="58" width="60" height="60" rx="4" fill="#0a0d14" stroke="#06b6d4" strokeWidth="1.5" />
+    <rect x="88" y="66" width="44" height="44" rx="2" fill="rgba(6,182,212,0.08)" stroke="rgba(6,182,212,0.25)" strokeWidth="1" />
+    {/* GPU die grid */}
+    <line x1="110" y1="66" x2="110" y2="110" stroke="rgba(6,182,212,0.15)" strokeWidth="1" />
+    <line x1="88" y1="88" x2="132" y2="88" stroke="rgba(6,182,212,0.15)" strokeWidth="1" />
+    {/* GPU die center */}
+    <rect x="99" y="77" width="22" height="22" rx="2" fill="rgba(6,182,212,0.3)" stroke="#06b6d4" strokeWidth="1" />
+    <text x="110" y="92" textAnchor="middle" fill="#06b6d4" fontSize="8" fontFamily="monospace" fontWeight="bold">GPU</text>
+
+    {/* VRAM chips */}
+    {[
+      [155, 58], [180, 58], [205, 58],
+      [155, 88], [180, 88], [205, 88],
+    ].map(([x, y]) => (
+      <rect key={`vram-${x}-${y}`} x={x} y={y} width="20" height="18" rx="2"
+        fill="rgba(6,182,212,0.08)" stroke="rgba(6,182,212,0.3)" strokeWidth="1" />
+    ))}
+    <text x="193" y="78" textAnchor="middle" fill="rgba(6,182,212,0.4)" fontSize="6" fontFamily="monospace">VRAM</text>
+
+    {/* Power connector */}
+    <rect x="18" y="50" width="28" height="16" rx="2" fill="rgba(245,158,11,0.08)" stroke="rgba(245,158,11,0.4)" strokeWidth="1" />
+    {[22, 28, 34, 40].map((x) => (
+      <rect key={`pin-${x}`} x={x} y={53} width="3" height="10" rx="0.5" fill="rgba(245,158,11,0.5)" />
+    ))}
+
+    {/* Trace lines */}
+    <path d="M60 88 L80 88" stroke="rgba(6,182,212,0.2)" strokeWidth="1" strokeDasharray="3 2" />
+    <path d="M140 88 L155 88" stroke="rgba(6,182,212,0.2)" strokeWidth="1" strokeDasharray="3 2" />
+    <path d="M140 67 L155 67" stroke="rgba(6,182,212,0.2)" strokeWidth="1" strokeDasharray="3 2" />
+
+    {/* Output ports at right edge */}
+    {[38, 56, 74, 92].map((y) => (
+      <rect key={`port-${y}`} x={242} y={y} width="8" height="12" rx="1"
+        fill="rgba(6,182,212,0.12)" stroke="rgba(6,182,212,0.3)" strokeWidth="1" />
+    ))}
+    <text x="253" y="74" fill="rgba(6,182,212,0.3)" fontSize="5" fontFamily="monospace"
+      transform="rotate(90, 253, 74)">HDMI·DP</text>
   </svg>
 );
 
-/* ─── Geometric background ─────────────────────────────────────────────────── */
-const GeoBg = () => (
-  <div aria-hidden="true" className="absolute inset-0 overflow-hidden z-0">
-    <div className="absolute inset-0 bg-[var(--color-bg-deep)]" />
-
-    <div className="bg-circuit-lines absolute inset-0 opacity-60" />
-
-    {/* Diagonal slash from opposite side */}
-    <div
-      className="absolute top-0 h-full w-px"
-      style={{
-        left: "40%",
-        background: "linear-gradient(to bottom, transparent, rgba(245,158,11,0.15) 30%, rgba(245,158,11,0.08) 70%, transparent)",
-        transform: "rotate(-12deg) translateX(-50%)",
-        transformOrigin: "top",
-      }}
-    />
-    <div
-      className="absolute top-0 h-full w-px"
-      style={{
-        left: "37%",
-        background: "linear-gradient(to bottom, transparent, rgba(245,158,11,0.06) 40%, transparent)",
-        transform: "rotate(-12deg) translateX(-50%)",
-        transformOrigin: "top",
-      }}
-    />
-
-    {/* Glow orbs */}
-    <div
-      className="absolute pointer-events-none rounded-full"
-      style={{
-        top: "-5%",
-        left: "5%",
-        width: "380px",
-        height: "380px",
-        background: "radial-gradient(ellipse, rgba(245,158,11,0.06) 0%, transparent 65%)",
-      }}
-    />
-    <div
-      className="absolute pointer-events-none rounded-full"
-      style={{
-        bottom: "0",
-        right: "-5%",
-        width: "320px",
-        height: "320px",
-        background: "radial-gradient(ellipse, rgba(6,182,212,0.07) 0%, transparent 65%)",
-      }}
-    />
-
-    {/* Left-side decorative text */}
-    <div
-      className="font-display absolute text-[0.6rem] tracking-[0.3em] uppercase whitespace-nowrap select-none text-[rgba(245,158,11,0.12)]"
-      style={{
-        left: "-20px",
-        top: "50%",
-        transform: "translateY(-50%) rotate(-90deg)",
-      }}
-    >
-      REGISTER · NEW ACCOUNT · USER INIT · SEQUENCE
-    </div>
-
-    {/* Bottom status bar */}
-    <div className="font-mono absolute text-[0.6rem] flex justify-between tracking-[0.08em] select-none text-[rgba(245,158,11,0.18)] bottom-4 left-6 right-6">
-      <span>SYS:READY</span>
-      <span>REGISTER_MODULE::LOADED</span>
-      <span>BUILD.2024.03</span>
-    </div>
-  </div>
+/* ─── Logo Icon ─────────────────────────────────────────────────────────────── */
+const LogoIcon = ({ size = 18 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 18 18" fill="none">
+    <rect x="3" y="3" width="12" height="12" rx="1.5" stroke="#0d1117" strokeWidth="1.5" />
+    <rect x="6" y="6" width="6" height="6" rx="0.5" fill="#0d1117" />
+    {[
+      [1, 6, 3, 6], [1, 12, 3, 12],
+      [15, 6, 17, 6], [15, 12, 17, 12],
+      [6, 1, 6, 3], [12, 1, 12, 3],
+      [6, 15, 6, 17], [12, 15, 12, 17],
+    ].map(([x1, y1, x2, y2], i) => (
+      <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#0d1117" strokeWidth="1.5" strokeLinecap="round" />
+    ))}
+  </svg>
 );
 
-/* ─── Chip label ───────────────────────────────────────────────────────────── */
-const ChipLabel = ({ label, amber }: { label: string; amber?: boolean }) => (
-  <span
-    className={`font-mono inline-block text-[0.6rem] tracking-[0.15em] uppercase py-0.5 px-2 ${
-      amber
-        ? "text-[var(--color-amber)] bg-[rgba(245,158,11,0.06)] border border-[rgba(245,158,11,0.2)]"
-        : "text-[var(--color-cyan)] bg-[rgba(6,182,212,0.06)] border border-[rgba(6,182,212,0.2)]"
-    }`}
-  >
-    {label}
-  </span>
-);
-
-/* ─── Form field helper ────────────────────────────────────────────────────── */
-type FieldProps = {
-  label: string;
-  icon: typeof faUser;
-  type: string;
-  value: string;
-  placeholder: string;
-  error?: string;
-  onChange: (v: string) => void;
-  delay: string;
-  amber?: boolean;
-};
-
-const Field = ({ label, icon, type, value, placeholder, error, onChange, delay, amber }: FieldProps) => (
-  <div className="animate-fade-in-up" style={{ animationDelay: delay }}>
-    <label className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2 text-[var(--color-text-muted)]">
-      <FontAwesomeIcon
-        icon={icon}
-        className={`text-[0.6rem] ${amber ? "text-[var(--color-amber)]" : "text-[var(--color-cyan)]"}`}
-      />
-      {label}
-    </label>
-    <input
-      type={type}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      className="hx-input rounded-sm"
-      style={{
-        fontFamily: type === "password" ? "var(--font-mono)" : "var(--font-body)",
-        borderColor: amber ? "var(--color-border-mid)" : undefined,
-      }}
-    />
-    {error && (
-      <p className="font-mono text-[0.65rem] mt-[5px] tracking-[0.05em] text-red-400">
-        <span className="text-[var(--color-error)]">! </span>
-        {error}
-      </p>
-    )}
-  </div>
-);
+/* ─── Build Components List ─────────────────────────────────────────────────── */
+const components = [
+  { label: "İşlemci" },
+  { label: "Anakart" },
+  { label: "Ram" },
+  { label: "Depolama" },
+  { label: "Ekran Kartı" },
+  { label: "Güç Kaynağı" },
+  { label: "Soğutucu" },
+  { label: "Kasa" },
+];
 
 /* ─── Register Page ────────────────────────────────────────────────────────── */
 const Register = () => {
@@ -157,181 +107,226 @@ const Register = () => {
     useRegister();
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-8 overflow-hidden">
-      <GeoBg />
-      <div className="scanline" />
+    <div className="min-h-screen flex">
 
-      <div className="animate-fade-in-up relative z-[1] w-full max-w-[460px]">
-        {/* ── Brand header ── */}
-        <div className="animate-fade-in-down flex flex-col items-start mb-8 pl-0.5">
-          <div className="flex items-center gap-3 mb-[10px]">
-            <LogoMark />
-            <div>
-              <div className="font-display text-[1.6rem] font-bold tracking-[0.06em] leading-none text-[var(--color-text-bright)]">
-                PC<span className="text-[var(--color-cyan)]">BUILD</span>ER
-              </div>
-              <div className="font-mono text-[0.55rem] tracking-[0.25em] uppercase mt-0.5 text-[var(--color-text-dim)]">
-                Hardware Configurator
-              </div>
+      {/* ── Left Panel ── */}
+      <div
+        className="hidden lg:flex w-1/2 flex-col justify-between p-12 relative overflow-hidden"
+        style={{ background: "#07090e" }}
+      >
+        {/* Dot grid */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(6,182,212,0.07) 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+          }}
+        />
+
+        {/* Smooth gradient bridge */}
+        <div
+          className="absolute right-0 top-0 bottom-0 w-24 pointer-events-none z-10"
+          style={{ background: "linear-gradient(to right, transparent, #0c1018)" }}
+        />
+
+        {/* Top: Brand */}
+        <div className="relative z-10">
+          <div className="flex items-center gap-2.5 mb-1.5">
+            <div className="w-8 h-8 bg-[var(--color-cyan)] rounded flex items-center justify-center shrink-0">
+              <LogoIcon size={18} />
             </div>
+            <span className="font-display text-xl font-bold tracking-wide text-[var(--color-text-bright)]">
+              PC<span className="text-[var(--color-cyan)]">Builder</span>
+            </span>
           </div>
-          <ChipLabel label="INIT · NEW USER ACCOUNT" amber />
+          <p className="font-body text-sm text-[var(--color-text-muted)] ml-[42px]">
+            Kendi bilgisayarını tasarla
+          </p>
         </div>
 
-        {/* ── Panel ── */}
-        <div
-          className="panel corner-brackets animate-fade-in-up stagger-2 p-8 rounded-sm relative border-t border-t-[rgba(245,158,11,0.35)]"
-        >
-          {/* top amber glow line */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-[linear-gradient(90deg,transparent,rgba(245,158,11,0.6),transparent)]" />
-
-          {/* Panel header */}
-          <div className="flex items-center justify-between mb-7">
-            <h2 className="font-display text-[1.3rem] font-semibold tracking-[0.08em] uppercase m-0 text-[var(--color-text-bright)]">
-              Hesap Oluştur
+        {/* Center: Illustration */}
+        <div className="relative z-10 flex flex-col items-center text-center gap-6">
+          <GpuIllustration />
+          <div>
+            <h2 className="font-display text-2xl font-semibold text-[var(--color-text-bright)] mb-2">
+              Aramıza Katıl
             </h2>
-            <div className="font-mono text-[0.58rem] tracking-[0.15em] py-[3px] px-2 text-[var(--color-amber)] bg-[rgba(245,158,11,0.08)] border border-[rgba(245,158,11,0.25)]">
-              NEW USER
-            </div>
+            <p className="font-body text-sm text-[var(--color-text-muted)] max-w-[260px] mx-auto leading-relaxed">
+              Hesabını oluştur, parçalarını seç ve hayalindeki sistemi kaydet.
+            </p>
+          </div>
+        </div>
+
+        {/* Bottom: Component badges */}
+        <div className="relative z-10">
+          <p className="font-mono text-[0.62rem] tracking-widest uppercase text-[var(--color-text-dim)] mb-2.5">
+            8 Bileşen
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {components.map((c, i) => (
+              <div
+                key={c.label}
+                className="flex items-center gap-1.5 px-2 py-1 rounded bg-[rgba(255,255,255,0.03)] border border-[var(--color-border-dim)]"
+              >
+                <span className="font-mono text-[0.6rem] text-[var(--color-cyan)] font-bold w-3 text-center leading-none">
+                  {i + 1}
+                </span>
+                <span className="font-body text-[0.7rem] text-[var(--color-text-secondary)]">
+                  {c.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Right Panel ── */}
+      <div
+        className="flex-1 lg:w-1/2 flex flex-col items-center justify-center p-8 sm:p-12"
+        style={{ background: "#0c1018" }}
+      >
+
+        {/* Mobile brand */}
+        <div className="lg:hidden flex items-center gap-2 mb-10">
+          <div className="w-7 h-7 bg-[var(--color-cyan)] rounded flex items-center justify-center">
+            <LogoIcon size={15} />
+          </div>
+          <span className="font-display text-lg font-bold text-[var(--color-text-bright)]">
+            PC<span className="text-[var(--color-cyan)]">Builder</span>
+          </span>
+        </div>
+
+        {/* Form */}
+        <div className="w-full max-w-[400px] animate-fade-in-up">
+
+          <div className="mb-8">
+            <h1 className="font-display text-3xl font-semibold text-[var(--color-text-bright)] mb-1.5">
+              Hesap oluştur
+            </h1>
+            <p className="font-body text-sm text-[var(--color-text-muted)]">
+              Birkaç saniyede üye ol ve yapılandırmana başla.
+            </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-[1.1rem]">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
 
-            {/* Server error */}
             {serverError && (
-              <div className="animate-fade-in font-body flex items-center gap-2 py-3 px-4 text-[0.82rem] bg-[rgba(239,68,68,0.06)] border border-[rgba(239,68,68,0.3)] border-l-[3px] border-l-[var(--color-error)] text-red-300">
+              <div className="animate-fade-in flex items-center gap-2.5 py-3 px-4 rounded bg-[rgba(239,68,68,0.06)] border border-[rgba(239,68,68,0.25)] text-red-300 text-sm">
                 <FontAwesomeIcon icon={faTriangleExclamation} className="shrink-0 text-[var(--color-error)]" />
-                {serverError}
+                <span className="font-body">{serverError}</span>
               </div>
             )}
 
-            <Field
-              label="Kullanıcı Adı"
-              icon={faUser}
-              type="text"
-              value={formData.username}
-              placeholder="kullaniciadi"
-              error={errors.username}
-              onChange={(v) => onChangeFormData("username", v)}
-              delay="0.12s"
-            />
+            {/* Username */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="username" className="font-body text-sm font-medium text-[var(--color-text-secondary)]">
+                Kullanıcı adı
+              </label>
+              <input
+                id="username"
+                type="text"
+                value={formData.username}
+                onChange={(e) => onChangeFormData("username", e.target.value)}
+                placeholder="kullaniciadi"
+                className="hx-input rounded-md"
+                autoComplete="username"
+              />
+              {errors.username && (
+                <p className="font-body text-xs text-red-400">{errors.username}</p>
+              )}
+            </div>
 
-            <Field
-              label="E-Posta"
-              icon={faEnvelope}
-              type="email"
-              value={formData.email}
-              placeholder="ornek@email.com"
-              error={errors.email}
-              onChange={(v) => onChangeFormData("email", v)}
-              delay="0.17s"
-            />
+            {/* Email */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="email" className="font-body text-sm font-medium text-[var(--color-text-secondary)]">
+                E-posta
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => onChangeFormData("email", e.target.value)}
+                placeholder="ornek@email.com"
+                className="hx-input rounded-md"
+                autoComplete="email"
+              />
+              {errors.email && (
+                <p className="font-body text-xs text-red-400">{errors.email}</p>
+              )}
+            </div>
 
-            {/* Side-by-side password fields on wider viewports */}
-            <div
-              className="animate-fade-in-up grid grid-cols-2 gap-4"
-              style={{ animationDelay: "0.22s" }}
-            >
-              <div>
-                <label className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2 text-[var(--color-text-muted)]">
-                  <FontAwesomeIcon icon={faLock} className="text-[0.6rem] text-[var(--color-cyan)]" />
+            {/* Password fields — side by side */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="password" className="font-body text-sm font-medium text-[var(--color-text-secondary)]">
                   Şifre
                 </label>
                 <input
+                  id="password"
                   type="password"
                   value={formData.password}
                   onChange={(e) => onChangeFormData("password", e.target.value)}
                   placeholder="••••••••"
-                  className="hx-input rounded-sm font-mono"
+                  className="hx-input rounded-md"
+                  autoComplete="new-password"
                 />
                 {errors.password && (
-                  <p className="font-mono text-[0.6rem] mt-[5px] text-red-400">
-                    ! {errors.password}
-                  </p>
+                  <p className="font-body text-xs text-red-400">{errors.password}</p>
                 )}
               </div>
 
-              <div>
-                <label className="font-mono flex items-center gap-1.5 text-[0.68rem] tracking-[0.14em] uppercase mb-2 text-[var(--color-text-muted)]">
-                  <FontAwesomeIcon icon={faShieldHalved} className="text-[0.6rem] text-[var(--color-amber)]" />
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="confirmPassword" className="font-body text-sm font-medium text-[var(--color-text-secondary)]">
                   Tekrar
                 </label>
                 <input
+                  id="confirmPassword"
                   type="password"
                   value={formData.confirmPassword}
                   onChange={(e) => onChangeFormData("confirmPassword", e.target.value)}
                   placeholder="••••••••"
-                  className="hx-input rounded-sm font-mono"
+                  className="hx-input rounded-md"
+                  autoComplete="new-password"
                 />
                 {errors.confirmPassword && (
-                  <p className="font-mono text-[0.6rem] mt-[5px] text-red-400">
-                    ! {errors.confirmPassword}
-                  </p>
+                  <p className="font-body text-xs text-red-400">{errors.confirmPassword}</p>
                 )}
               </div>
             </div>
 
             {/* Submit */}
-            <div className="animate-fade-in-up pt-1" style={{ animationDelay: "0.3s" }}>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="hx-btn-primary rounded-sm flex items-center justify-center gap-2.5 border-[var(--color-amber-mid)] shadow-none"
-                style={{
-                  background: isLoading
-                    ? undefined
-                    : "linear-gradient(135deg, #451a03 0%, #b45309 50%, #f59e0b 100%)",
-                }}
-                onMouseEnter={(e) => {
-                  if (!isLoading) {
-                    (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                      "0 0 20px rgba(245,158,11,0.35), 0 0 60px rgba(245,158,11,0.15)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
-                }}
-              >
-                {isLoading ? (
-                  <>
-                    <FontAwesomeIcon icon={faSpinner} className="animate-spin-slow" />
-                    <span>HESAP OLUŞTURULUYOR...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>KAYIT OL</span>
-                    <FontAwesomeIcon icon={faArrowRight} className="text-[0.8rem]" />
-                  </>
-                )}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="hx-btn-primary rounded-md flex items-center justify-center gap-2 mt-1"
+            >
+              {isLoading ? (
+                <>
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin-slow" />
+                  <span>Hesap oluşturuluyor...</span>
+                </>
+              ) : (
+                <span>Kayıt Ol</span>
+              )}
+            </button>
 
           </form>
 
-          {/* Divider */}
           <div className="flex items-center gap-3 my-6">
             <div className="flex-1 h-px bg-[var(--color-border-dim)]" />
-            <span className="font-mono text-[0.58rem] tracking-[0.1em] text-[var(--color-text-dim)]">
-              MEVCUT KULLANICI
-            </span>
+            <span className="font-body text-xs text-[var(--color-text-dim)]">veya</span>
             <div className="flex-1 h-px bg-[var(--color-border-dim)]" />
           </div>
 
-          <p className="font-body text-center text-[0.82rem] m-0 text-[var(--color-text-muted)]">
-            Zaten hesabınız var mı?{" "}
+          <p className="font-body text-sm text-center text-[var(--color-text-muted)]">
+            Zaten hesabın var mı?{" "}
             <Link
               to="/login"
-              className="font-semibold no-underline tracking-[0.04em] transition-all duration-200 text-[var(--color-cyan)] hover:text-[var(--color-cyan-bright)] hover:[text-shadow:0_0_12px_rgba(6,182,212,0.5)]"
+              className="font-semibold text-[var(--color-cyan)] hover:text-[var(--color-cyan-bright)] transition-colors duration-200 no-underline"
             >
-              Giriş Yap
+              Giriş yap
             </Link>
           </p>
-        </div>
-
-        {/* Bottom meta */}
-        <div className="font-mono animate-fade-in stagger-8 flex justify-between mt-4 text-[0.55rem] tracking-[0.1em] text-[var(--color-text-dim)] px-0.5">
-          <span>PCBUILDER © 2024</span>
-          <span>v2.4.1</span>
         </div>
       </div>
     </div>
