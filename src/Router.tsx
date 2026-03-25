@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import {
+  Home,
   Login,
   Register,
   Dashboard,
@@ -25,6 +26,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
 const Router = () => {
   return (
     <Routes>
+      <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route
@@ -91,7 +93,7 @@ const Router = () => {
           </PrivateRoute>
         }
       />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
