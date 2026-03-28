@@ -31,7 +31,7 @@ const useRamSelect = () => {
   const [items, setItems] = useState<RAM[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<RAM | null>(null);
-  const [filters, setFilters] = useState<RamFilters | null>(null);
+  const [filters, setFilters] = useState<RamFilters>({ search: "", brands: [], types: [], capacityRange: [0, Infinity] as [number, number], speedRange: [0, Infinity] as [number, number] });
 
   useEffect(() => {
     const load = async () => {
@@ -67,7 +67,6 @@ const useRamSelect = () => {
   );
 
   const filtered = useMemo(() => {
-    if (!filters) return items;
     return items.filter((i) => {
       if (
         filters.search &&
@@ -98,12 +97,11 @@ const useRamSelect = () => {
     key: K,
     value: RamFilters[K]
   ) => {
-    setFilters((prev) => (prev ? { ...prev, [key]: value } : prev));
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const toggleArrayFilter = (key: "brands" | "types", value: string) => {
     setFilters((prev) => {
-      if (!prev) return prev;
       const arr = prev[key];
       return {
         ...prev,
@@ -115,7 +113,7 @@ const useRamSelect = () => {
   };
 
   const resetFilters = () => {
-    if (items.length > 0) setFilters(defaultFilters(items));
+    setFilters(defaultFilters(items));
   };
 
   const handleSelectById = (id: string) => {

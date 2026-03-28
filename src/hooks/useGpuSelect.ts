@@ -29,7 +29,7 @@ const useGpuSelect = () => {
   const [items, setItems] = useState<GPU[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<GPU | null>(null);
-  const [filters, setFilters] = useState<GpuFilters | null>(null);
+  const [filters, setFilters] = useState<GpuFilters>({ search: "", brands: [], memoryRange: [0, Infinity] as [number, number], tdpRange: [0, Infinity] as [number, number] });
 
   useEffect(() => {
     const load = async () => {
@@ -60,7 +60,6 @@ const useGpuSelect = () => {
   );
 
   const filtered = useMemo(() => {
-    if (!filters) return items;
     return items.filter((i) => {
       if (
         filters.search &&
@@ -86,12 +85,11 @@ const useGpuSelect = () => {
     key: K,
     value: GpuFilters[K]
   ) => {
-    setFilters((prev) => (prev ? { ...prev, [key]: value } : prev));
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const toggleArrayFilter = (key: "brands", value: string) => {
     setFilters((prev) => {
-      if (!prev) return prev;
       const arr = prev[key];
       return {
         ...prev,
@@ -103,7 +101,7 @@ const useGpuSelect = () => {
   };
 
   const resetFilters = () => {
-    if (items.length > 0) setFilters(defaultFilters(items));
+    setFilters(defaultFilters(items));
   };
 
   const handleSelectById = (id: string) => {

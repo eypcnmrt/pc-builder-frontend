@@ -26,7 +26,7 @@ const useCoolerSelect = () => {
   const [items, setItems] = useState<Cooler[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<Cooler | null>(null);
-  const [filters, setFilters] = useState<CoolerFilters | null>(null);
+  const [filters, setFilters] = useState<CoolerFilters>({ search: "", brands: [], types: [], tdpRange: [0, Infinity] as [number, number] });
   const [processorSocket, setProcessorSocket] = useState<string | undefined>();
 
   useEffect(() => {
@@ -60,7 +60,6 @@ const useCoolerSelect = () => {
 
   // Sort: compatible socket first, then rest
   const filtered = useMemo(() => {
-    if (!filters) return items;
     const base = items.filter((i) => {
       if (
         filters.search &&
@@ -104,12 +103,11 @@ const useCoolerSelect = () => {
     key: K,
     value: CoolerFilters[K]
   ) => {
-    setFilters((prev) => (prev ? { ...prev, [key]: value } : prev));
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const toggleArrayFilter = (key: "brands" | "types", value: string) => {
     setFilters((prev) => {
-      if (!prev) return prev;
       const arr = prev[key];
       return {
         ...prev,
@@ -121,7 +119,7 @@ const useCoolerSelect = () => {
   };
 
   const resetFilters = () => {
-    if (items.length > 0) setFilters(defaultFilters(items));
+    setFilters(defaultFilters(items));
   };
 
   const handleSelectById = (id: string) => {

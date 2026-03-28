@@ -67,7 +67,7 @@ const useProcessorSelect = () => {
   const [processors, setProcessors] = useState<Processor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<Processor | null>(null);
-  const [filters, setFilters] = useState<ProcessorFilters | null>(null);
+  const [filters, setFilters] = useState<ProcessorFilters>({ search: "", brands: [], sockets: [], memoryTypes: [], integratedGraphics: "all", coreRange: [0, Infinity] as [number, number], priceRange: [0, Infinity] as [number, number], tdpRange: [0, Infinity] as [number, number], boostClockRange: [0, Infinity] as [number, number] });
 
   // Motherboard state
   const [motherboards, setMotherboards] = useState<Motherboard[]>([]);
@@ -147,7 +147,6 @@ const useProcessorSelect = () => {
 
   // Filtered processors
   const filtered = useMemo(() => {
-    if (!filters) return processors;
     return processors.filter((p) => {
       if (filters.search && !`${p.brand} ${p.model} ${p.series}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
       if (filters.brands.length && !filters.brands.includes(p.brand)) return false;
@@ -180,12 +179,11 @@ const useProcessorSelect = () => {
 
   // Processor filter helpers
   const updateFilter = <K extends keyof ProcessorFilters>(key: K, value: ProcessorFilters[K]) => {
-    setFilters((prev) => prev ? { ...prev, [key]: value } : prev);
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const toggleArrayFilter = (key: "brands" | "sockets" | "memoryTypes", value: string) => {
     setFilters((prev) => {
-      if (!prev) return prev;
       const arr = prev[key];
       return { ...prev, [key]: arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value] };
     });

@@ -22,7 +22,7 @@ const useCaseSelect = () => {
   const [items, setItems] = useState<PcCase[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<PcCase | null>(null);
-  const [filters, setFilters] = useState<CaseFilters | null>(null);
+  const [filters, setFilters] = useState<CaseFilters>({ search: "", brands: [], formFactors: [] });
   const [motherboardFormFactor, setMotherboardFormFactor] = useState<
     string | undefined
   >();
@@ -60,7 +60,6 @@ const useCaseSelect = () => {
 
   // Sort: matching motherboard form factor first
   const filtered = useMemo(() => {
-    if (!filters) return items;
     const base = items.filter((i) => {
       if (
         filters.search &&
@@ -103,7 +102,7 @@ const useCaseSelect = () => {
     key: K,
     value: CaseFilters[K]
   ) => {
-    setFilters((prev) => (prev ? { ...prev, [key]: value } : prev));
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const toggleArrayFilter = (
@@ -111,7 +110,6 @@ const useCaseSelect = () => {
     value: string
   ) => {
     setFilters((prev) => {
-      if (!prev) return prev;
       const arr = prev[key];
       return {
         ...prev,
@@ -123,7 +121,7 @@ const useCaseSelect = () => {
   };
 
   const resetFilters = () => {
-    if (items.length > 0) setFilters(defaultFilters(items));
+    setFilters(defaultFilters(items));
   };
 
   const handleSelectById = (id: string) => {

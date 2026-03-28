@@ -36,7 +36,7 @@ const usePsuSelect = () => {
   const [items, setItems] = useState<PSU[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<PSU | null>(null);
-  const [filters, setFilters] = useState<PsuFilters | null>(null);
+  const [filters, setFilters] = useState<PsuFilters>({ search: "", brands: [], efficiencyRatings: [], modularTypes: [], wattageRange: [0, Infinity] as [number, number] });
   const [minWattage, setMinWattage] = useState(0);
 
   useEffect(() => {
@@ -72,7 +72,6 @@ const usePsuSelect = () => {
   );
 
   const filtered = useMemo(() => {
-    if (!filters) return items;
     return items.filter((i) => {
       if (
         filters.search &&
@@ -106,7 +105,7 @@ const usePsuSelect = () => {
     key: K,
     value: PsuFilters[K]
   ) => {
-    setFilters((prev) => (prev ? { ...prev, [key]: value } : prev));
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const toggleArrayFilter = (
@@ -114,7 +113,6 @@ const usePsuSelect = () => {
     value: string
   ) => {
     setFilters((prev) => {
-      if (!prev) return prev;
       const arr = prev[key];
       return {
         ...prev,
@@ -126,7 +124,7 @@ const usePsuSelect = () => {
   };
 
   const resetFilters = () => {
-    if (items.length > 0) setFilters(defaultFilters(items));
+    setFilters(defaultFilters(items));
   };
 
   const handleSelectById = (id: string) => {

@@ -28,7 +28,7 @@ const useStorageSelect = () => {
   const [items, setItems] = useState<Storage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<Storage | null>(null);
-  const [filters, setFilters] = useState<StorageFilters | null>(null);
+  const [filters, setFilters] = useState<StorageFilters>({ search: "", brands: [], types: [], interfaces: [], capacityRange: [0, Infinity] as [number, number] });
 
   useEffect(() => {
     const load = async () => {
@@ -59,7 +59,6 @@ const useStorageSelect = () => {
   );
 
   const filtered = useMemo(() => {
-    if (!filters) return items;
     return items.filter((i) => {
       if (
         filters.search &&
@@ -87,7 +86,7 @@ const useStorageSelect = () => {
     key: K,
     value: StorageFilters[K]
   ) => {
-    setFilters((prev) => (prev ? { ...prev, [key]: value } : prev));
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const toggleArrayFilter = (
@@ -95,7 +94,6 @@ const useStorageSelect = () => {
     value: string
   ) => {
     setFilters((prev) => {
-      if (!prev) return prev;
       const arr = prev[key];
       return {
         ...prev,
@@ -107,7 +105,7 @@ const useStorageSelect = () => {
   };
 
   const resetFilters = () => {
-    if (items.length > 0) setFilters(defaultFilters(items));
+    setFilters(defaultFilters(items));
   };
 
   const handleSelectById = (id: string) => {

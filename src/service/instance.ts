@@ -27,7 +27,8 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.log("API Error:", error);
+    console.error("API Error:", error);
+    if ((error as any)?.response?.status === 401) { window.location.href = "/login"; }
     return Promise.reject(error);
   }
 );
@@ -40,7 +41,6 @@ const get = async <T>(
     const response = await instance.get<T>(url, config);
     return response.data;
   } catch (error) {
-    console.error("API Error:", error);
     return null;
   }
 };
@@ -54,7 +54,6 @@ const post = async <T>(
     const response = await instance.post<T>(url, data, config);
     return response.data;
   } catch (error) {
-    console.error("API Error:", error);
     return null;
   }
 };
@@ -68,7 +67,6 @@ const put = async <T>(
     const response = await instance.put<T>(url, data, config);
     return response.data;
   } catch (error) {
-    console.error("API Error:", error);
     return null;
   }
 };
@@ -78,7 +76,6 @@ const del = async <T>(url: string, data?: unknown): Promise<T | null> => {
     const response = await instance.delete<T>(url, { data });
     return response.data;
   } catch (error) {
-    console.error("API Error:", error);
     return null;
   }
 };
