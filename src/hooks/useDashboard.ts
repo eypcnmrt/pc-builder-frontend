@@ -1,25 +1,26 @@
 import { useState, useEffect } from "react";
 import { fetchCurrentBuild, fetchBuildActivities } from "../service/build";
+import { asyncLoading, asyncSuccess, asyncError } from "../types/common";
+import type { AsyncState } from "../types/common";
 import type { Build, BuildActivity } from "../types/build";
 
 export const useDashboard = () => {
-  const [build, setBuild] = useState<Build | null>(null);
+  const [buildState, setBuildState] = useState<AsyncState<Build>>(asyncLoading());
   const [activities, setActivities] = useState<BuildActivity[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
-      setLoading(true);
-      const buildData = await fetchCurrentBuild();
-      if (buildData) {
-        setBuild(buildData);
-        const activityData = await fetchBuildActivities(buildData.id);
-        setActivities(activityData ?? []);
+      const build = await fetchCurrentBuild();
+      if (!build) {
+        setBuildState(asyncError("Build bilgisi yüklenemedi. Lütfen sayfayı yenileyin."));
+        return;
       }
-      setLoading(false);
+      setBuildState(asyncSuccess(build));
+      const acts = await fetchBuildActivities(build.id);
+      setActivities(acts ?? []);
     };
     load();
   }, []);
 
-  return { build, activities, loading };
+  return { buildState, activities };
 };

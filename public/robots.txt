@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /build
+
+Sitemap: https://pcbuilder.app/sitemap.xml

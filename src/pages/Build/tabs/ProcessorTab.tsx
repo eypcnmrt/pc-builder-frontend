@@ -1,0 +1,130 @@
+import React from "react";
+import { useProcessorTab } from "../../../hooks/useProcessorTab";
+import ComponentCard from "../../../components/ui/ComponentCard";
+import FilterPanel from "../../../components/ui/FilterPanel";
+import type { FilterPanelSection, FilterPanelRange } from "../../../components/ui/FilterPanel";
+
+const ProcessorTab = () => {
+  const {
+    asyncState, filtered, filters, options, viewMode,
+    setViewMode, toggleArrayFilter, resetFilters, setFilters, handleSelect, selectedId,
+  } = useProcessorTab();
+
+  if (asyncState.loading) {
+    return (
+      <div className="flex gap-6">
+        <div className="w-56 h-96 bg-slate-100 rounded-xl animate-pulse flex-shrink-0" />
+        <div className="flex-1 space-y-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-20 bg-slate-100 rounded-xl animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (asyncState.error) {
+    return (
+      <div className="flex items-center justify-center h-64 text-slate-500">
+        <div className="text-center">
+          <p className="mb-3">{asyncState.error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+          >
+            Yenile
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const filterSections: (FilterPanelSection | FilterPanelRange)[] = [
+    {
+      type: "checkbox",
+      label: "Marka",
+      options: options.brands,
+      selected: filters.brands,
+      onChange: (v) => toggleArrayFilter("brands", v),
+    },
+    {
+      type: "checkbox",
+      label: "Soket",
+      options: options.sockets,
+      selected: filters.sockets,
+      onChange: (v) => toggleArrayFilter("sockets", v),
+    },
+    {
+      type: "range",
+      label: "Fiyat",
+      min: options.minPrice,
+      max: options.maxPrice,
+      value: [filters.priceMin, filters.priceMax],
+      onChange: ([min, max]) => setFilters((f) => ({ ...f, priceMin: min, priceMax: max })),
+      unit: "₺",
+    },
+  ];
+
+  return (
+    <div className="flex gap-6">
+      <FilterPanel
+        search={filters.search}
+        onSearchChange={(v) => setFilters((f) => ({ ...f, search: v }))}
+        sections={filterSections}
+        onReset={resetFilters}
+      />
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-sm text-slate-500">
+            <strong className="text-slate-900">{filtered.length}</strong> işlemci
+          </span>
+          <div className="flex border border-slate-200 rounded-lg overflow-hidden">
+            <button
+              onClick={() => setViewMode("list")}
+              className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === "list" ? "bg-blue-600 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
+            >
+              ☰ Liste
+            </button>
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === "grid" ? "bg-blue-600 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
+            >
+              ⊞ Grid
+            </button>
+          </div>
+        </div>
+
+        {filtered.length === 0 ? (
+          <div className="flex items-center justify-center h-48 text-slate-400 text-sm">
+            Arama kriterlerine uygun işlemci bulunamadı.
+          </div>
+        ) : (
+          <div className={viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
+            {filtered.map((p) => (
+              <ComponentCard
+                key={p.id}
+                id={p.id}
+                brand={p.brand}
+                model={p.model}
+                imageUrl={p.imageUrl}
+                price={p.price}
+                isSelected={selectedId === p.id}
+                mode={viewMode}
+                onSelect={() => handleSelect(p)}
+                specs={[
+                  { label: "Soket", value: p.socket },
+                  { label: "Çekirdek", value: `${p.cores}C/${p.threads}T` },
+                  { label: "TDP", value: `${p.tdp}W` },
+                  { label: "Boost", value: `${p.boostClock} GHz` },
+                ]}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ProcessorTab;

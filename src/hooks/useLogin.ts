@@ -1,77 +1,53 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import * as Yup from "yup";
+import * as yup from "yup";
 import { fetchLogin } from "../service/auth";
 import { saveToken, saveUser } from "../utils/token";
+import { toast } from "../components/Toast";
 import type { ValidationErrors } from "../types/form";
 
-type FormData = {
-  email: string;
-  password: string;
-};
+const schema = yup.object({
+  email: yup.string().email("Geçerli bir e-posta girin").required("E-posta zorunlu"),
+  password: yup.string().required("Şifre zorunlu"),
+});
 
-const useLogin = () => {
+export const useLogin = () => {
   const navigate = useNavigate();
-
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [serverError, setServerError] = useState<string>("");
-  const [isLoading, setLoading] = useState<boolean>(false);
-  const [formData, setFormData] = useState<FormData>({
-    email: "",
-    password: "",
-  });
+  const [serverError, setServerError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const validationSchema = Yup.object().shape({
-    email: Yup.string()
-      .email("Geçerli bir e-posta adresi girin.")
-      .required("E-posta zorunludur."),
-    password: Yup.string().required("Şifre zorunludur."),
-  });
-
-  const onChangeFormData = (key: keyof FormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
-    setErrors((prev) => ({ ...prev, [key]: undefined }));
+  const onChange = (key: keyof typeof formData, value: string) => {
+    setFormData((p) => ({ ...p, [key]: value }));
+    setErrors((p) => ({ ...p, [key]: undefined }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setServerError("");
-
     try {
-      await validationSchema.validate(formData, { abortEarly: false });
-    } catch (validationError) {
-      if (validationError instanceof Yup.ValidationError) {
-        const newErrors: ValidationErrors = {};
-        validationError.inner.forEach((err) => {
-          if (err.path) newErrors[err.path] = err.message;
-        });
-        setErrors(newErrors);
-        return;
+      await schema.validate(formData, { abortEarly: false });
+    } catch (err) {
+      if (err instanceof yup.ValidationError) {
+        const errs: ValidationErrors = {};
+        err.inner.forEach((e) => { if (e.path) errs[e.path] = e.message; });
+        setErrors(errs);
       }
+      return;
     }
-
-    setLoading(true);
-    const response = await fetchLogin(formData);
-    setLoading(false);
-
-    if (!response) {
+    setIsLoading(true);
+    const result = await fetchLogin(formData);
+    setIsLoading(false);
+    if (!result) {
       setServerError("E-posta veya şifre hatalı.");
       return;
     }
-
-    saveToken(response.token);
-    saveUser({ username: response.username, email: response.email });
-    navigate("/build/building");
+    saveToken(result.token);
+    saveUser({ username: result.username, email: result.email });
+    toast.success("Giriş başarılı!");
+    navigate("/dashboard");
   };
 
-  return {
-    formData,
-    errors,
-    serverError,
-    isLoading,
-    onChangeFormData,
-    handleSubmit,
-  };
+  return { formData, errors, serverError, isLoading, onChange, handleSubmit };
 };
-
-export default useLogin;
