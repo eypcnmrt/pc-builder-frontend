@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { fetchRams } from "../service/ram";
 import { useBuildContext } from "../context/BuildContext";
 import { toast } from "../components/Toast";
@@ -6,10 +6,10 @@ import { asyncLoading, asyncSuccess, asyncError } from "../types/common";
 import type { AsyncState } from "../types/common";
 import type { RAM } from "../types/build";
 
-interface RamFilters { search: string; brands: string[]; types: string[]; }
+interface RamFilters { brands: string[]; types: string[]; }
 type RamSortField = "capacityGb" | "speedMhz" | "latencyCl";
 interface SortState<T extends string> { field: T; direction: "asc" | "desc"; }
-const DEFAULT_FILTERS: RamFilters = { search: "", brands: [], types: [] };
+const DEFAULT_FILTERS: RamFilters = { brands: [], types: [] };
 const DEFAULT_SORT: SortState<RamSortField> = { field: "capacityGb", direction: "desc" };
 
 export const useRamTab = () => {
@@ -18,20 +18,31 @@ export const useRamTab = () => {
   const [filters, setFilters] = useState<RamFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<SortState<RamSortField>>(DEFAULT_SORT);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [searchInput, setSearchInput] = useState("");
+  const [committedSearch, setCommittedSearch] = useState("");
 
   const ramTypeFilter = state.motherboard?.supportedRamType;
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
-      const odataFilter = ramTypeFilter
-        ? `type eq '${ramTypeFilter.replace(/'/g, "''")}'`
-        : undefined;
-      const result = await fetchRams(1, 200, odataFilter);
+      setAsyncState(asyncLoading());
+      const parts: string[] = [];
+      if (ramTypeFilter) parts.push(`type eq '${ramTypeFilter.replace(/'/g, "''")}'`);
+      if (committedSearch) {
+        const q = committedSearch.replace(/'/g, "''");
+        parts.push(`(contains(tolower(Brand),'${q}') or contains(tolower(Model),'${q}'))`);
+      }
+      const result = await fetchRams(1, 200, parts.length ? parts.join(" and ") : undefined);
+      if (cancelled) return;
       if (!result) { setAsyncState(asyncError("RAM'ler yüklenemedi.")); return; }
       setAsyncState(asyncSuccess(result.items));
     };
     load();
-  }, [ramTypeFilter]);
+    return () => { cancelled = true; };
+  }, [ramTypeFilter, committedSearch]);
+
+  const onSearch = useCallback(() => setCommittedSearch(searchInput.trim().toLowerCase()), [searchInput]);
 
   const options = useMemo(() => {
     const data = asyncState.data ?? [];
@@ -42,9 +53,7 @@ export const useRamTab = () => {
   }, [asyncState.data]);
 
   const filtered = useMemo(() => {
-    const data = asyncState.data ?? [];
-    const result = data.filter((r) => {
-      if (filters.search && !`${r.brand} ${r.model}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
+    const result = (asyncState.data ?? []).filter((r) => {
       if (filters.brands.length && !filters.brands.includes(r.brand)) return false;
       if (filters.types.length && !filters.types.includes(r.type)) return false;
       return true;
@@ -66,7 +75,7 @@ export const useRamTab = () => {
 
   return {
     asyncState, filtered, filters, options, sort, setSort, viewMode, setViewMode, setFilters,
-    toggleArrayFilter, resetFilters: () => setFilters(DEFAULT_FILTERS),
-    handleSelect, selectedId: state.ramId, ramTypeFilter,
+    toggleArrayFilter, resetFilters: () => { setFilters(DEFAULT_FILTERS); setSearchInput(""); setCommittedSearch(""); },
+    handleSelect, selectedId: state.ramId, ramTypeFilter, searchInput, setSearchInput, onSearch,
   };
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { fetchGpus } from "../service/gpu";
 import { useBuildContext } from "../context/BuildContext";
 import { toast } from "../components/Toast";
@@ -6,11 +6,17 @@ import { asyncLoading, asyncSuccess, asyncError } from "../types/common";
 import type { AsyncState } from "../types/common";
 import type { GPU } from "../types/build";
 
-interface GpuFilters { search: string; brands: string[]; }
+interface GpuFilters { brands: string[]; }
 type GpuSortField = "memoryGb" | "boostClock" | "tdp";
 interface SortState<T extends string> { field: T; direction: "asc" | "desc"; }
-const DEFAULT_FILTERS: GpuFilters = { search: "", brands: [] };
+const DEFAULT_FILTERS: GpuFilters = { brands: [] };
 const DEFAULT_SORT: SortState<GpuSortField> = { field: "memoryGb", direction: "desc" };
+
+const buildODataFilter = (search: string): string | undefined => {
+  if (!search) return undefined;
+  const q = search.replace(/'/g, "''");
+  return `contains(tolower(Brand),'${q}') or contains(tolower(Model),'${q}')`;
+};
 
 export const useGpuTab = () => {
   const { state, setComponent } = useBuildContext();
@@ -18,22 +24,28 @@ export const useGpuTab = () => {
   const [filters, setFilters] = useState<GpuFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<SortState<GpuSortField>>(DEFAULT_SORT);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [searchInput, setSearchInput] = useState("");
+  const [committedSearch, setCommittedSearch] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
-      const result = await fetchGpus(1, 200);
+      setAsyncState(asyncLoading());
+      const result = await fetchGpus(1, 200, buildODataFilter(committedSearch));
+      if (cancelled) return;
       if (!result) { setAsyncState(asyncError("Ekran kartları yüklenemedi.")); return; }
       setAsyncState(asyncSuccess(result.items));
     };
     load();
-  }, []);
+    return () => { cancelled = true; };
+  }, [committedSearch]);
+
+  const onSearch = useCallback(() => setCommittedSearch(searchInput.trim().toLowerCase()), [searchInput]);
 
   const options = useMemo(() => ({ brands: [...new Set((asyncState.data ?? []).map((g) => g.brand))].sort() }), [asyncState.data]);
 
   const filtered = useMemo(() => {
-    const data = asyncState.data ?? [];
-    const result = data.filter((g) => {
-      if (filters.search && !`${g.brand} ${g.model}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
+    const result = (asyncState.data ?? []).filter((g) => {
       if (filters.brands.length && !filters.brands.includes(g.brand)) return false;
       return true;
     });
@@ -52,6 +64,7 @@ export const useGpuTab = () => {
   return {
     asyncState, filtered, filters, options, sort, setSort, viewMode, setViewMode, setFilters,
     toggleBrand: (v: string) => setFilters((f) => ({ ...f, brands: f.brands.includes(v) ? f.brands.filter((b) => b !== v) : [...f.brands, v] })),
-    resetFilters: () => setFilters(DEFAULT_FILTERS), handleSelect, selectedId: state.gpuId,
+    resetFilters: () => { setFilters(DEFAULT_FILTERS); setSearchInput(""); setCommittedSearch(""); },
+    handleSelect, selectedId: state.gpuId, searchInput, setSearchInput, onSearch,
   };
 };

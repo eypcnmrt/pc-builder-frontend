@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { fetchProcessors } from "../service/processor";
 import { useBuildContext } from "../context/BuildContext";
 import { toast } from "../components/Toast";
@@ -7,7 +7,6 @@ import type { AsyncState } from "../types/common";
 import type { Processor } from "../types/processor";
 
 interface ProcessorFilters {
-  search: string;
   brands: string[];
   sockets: string[];
   priceMin: number;
@@ -18,7 +17,6 @@ export type ProcessorSortField = "price" | "cores" | "boostClock";
 export interface SortState<T extends string> { field: T; direction: "asc" | "desc"; }
 
 const DEFAULT_FILTERS: ProcessorFilters = {
-  search: "",
   brands: [],
   sockets: [],
   priceMin: 0,
@@ -33,22 +31,37 @@ export const useProcessorTab = () => {
   const [filters, setFilters] = useState<ProcessorFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<SortState<ProcessorSortField>>(DEFAULT_SORT);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [searchInput, setSearchInput] = useState("");
+  const [committedSearch, setCommittedSearch] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
-      const result = await fetchProcessors(1, 200);
+      setAsyncState(asyncLoading());
+      const odataFilter = committedSearch
+        ? `contains(tolower(Brand),'${committedSearch.replace(/'/g, "''")}') or contains(tolower(Model),'${committedSearch.replace(/'/g, "''")}') `
+        : undefined;
+      const result = await fetchProcessors(1, 200, odataFilter);
+      if (cancelled) return;
       if (!result) {
         setAsyncState(asyncError("İşlemciler yüklenemedi. Lütfen tekrar deneyin."));
         return;
       }
       setAsyncState(asyncSuccess(result.items));
-      const prices = result.items.map((p) => p.price ?? 0).filter(Boolean);
-      if (prices.length) {
-        setFilters((f) => ({ ...f, priceMin: Math.min(...prices), priceMax: Math.max(...prices) }));
+      if (!committedSearch) {
+        const prices = result.items.map((p) => p.price ?? 0).filter(Boolean);
+        if (prices.length) {
+          setFilters((f) => ({ ...f, priceMin: Math.min(...prices), priceMax: Math.max(...prices) }));
+        }
       }
     };
     load();
-  }, []);
+    return () => { cancelled = true; };
+  }, [committedSearch]);
+
+  const onSearch = useCallback(() => {
+    setCommittedSearch(searchInput.trim().toLowerCase());
+  }, [searchInput]);
 
   const options = useMemo(() => {
     const data = asyncState.data ?? [];
@@ -63,7 +76,6 @@ export const useProcessorTab = () => {
   const filtered = useMemo(() => {
     const data = asyncState.data ?? [];
     const result = data.filter((p) => {
-      if (filters.search && !`${p.brand} ${p.model}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
       if (filters.brands.length && !filters.brands.includes(p.brand)) return false;
       if (filters.sockets.length && !filters.sockets.includes(p.socket)) return false;
       if (p.price != null && (p.price < filters.priceMin || p.price > filters.priceMax)) return false;
@@ -91,7 +103,11 @@ export const useProcessorTab = () => {
     toast.success(`${processor.brand} ${processor.model} seçildi`);
   };
 
-  const resetFilters = () => setFilters({ ...DEFAULT_FILTERS, priceMin: options.minPrice, priceMax: options.maxPrice });
+  const resetFilters = () => {
+    setFilters({ ...DEFAULT_FILTERS, priceMin: options.minPrice, priceMax: options.maxPrice });
+    setSearchInput("");
+    setCommittedSearch("");
+  };
 
   return {
     asyncState,
@@ -107,5 +123,8 @@ export const useProcessorTab = () => {
     resetFilters,
     handleSelect,
     selectedId: state.processorId,
+    searchInput,
+    setSearchInput,
+    onSearch,
   };
 };

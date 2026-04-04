@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { fetchStorages } from "../service/storage";
 import { useBuildContext } from "../context/BuildContext";
 import { toast } from "../components/Toast";
@@ -6,11 +6,17 @@ import { asyncLoading, asyncSuccess, asyncError } from "../types/common";
 import type { AsyncState } from "../types/common";
 import type { Storage } from "../types/build";
 
-interface StorageFilters { search: string; brands: string[]; types: string[]; }
+interface StorageFilters { brands: string[]; types: string[]; }
 type StorageSortField = "capacityGb" | "readSpeedMbs" | "writeSpeedMbs";
 interface SortState<T extends string> { field: T; direction: "asc" | "desc"; }
-const DEFAULT_FILTERS: StorageFilters = { search: "", brands: [], types: [] };
+const DEFAULT_FILTERS: StorageFilters = { brands: [], types: [] };
 const DEFAULT_SORT: SortState<StorageSortField> = { field: "capacityGb", direction: "desc" };
+
+const buildODataFilter = (search: string): string | undefined => {
+  if (!search) return undefined;
+  const q = search.replace(/'/g, "''");
+  return `contains(tolower(Brand),'${q}') or contains(tolower(Model),'${q}')`;
+};
 
 export const useStorageTab = () => {
   const { state, setComponent } = useBuildContext();
@@ -18,15 +24,23 @@ export const useStorageTab = () => {
   const [filters, setFilters] = useState<StorageFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<SortState<StorageSortField>>(DEFAULT_SORT);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [searchInput, setSearchInput] = useState("");
+  const [committedSearch, setCommittedSearch] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
-      const result = await fetchStorages(1, 200);
+      setAsyncState(asyncLoading());
+      const result = await fetchStorages(1, 200, buildODataFilter(committedSearch));
+      if (cancelled) return;
       if (!result) { setAsyncState(asyncError("Depolama cihazları yüklenemedi.")); return; }
       setAsyncState(asyncSuccess(result.items));
     };
     load();
-  }, []);
+    return () => { cancelled = true; };
+  }, [committedSearch]);
+
+  const onSearch = useCallback(() => setCommittedSearch(searchInput.trim().toLowerCase()), [searchInput]);
 
   const options = useMemo(() => {
     const data = asyncState.data ?? [];
@@ -34,9 +48,7 @@ export const useStorageTab = () => {
   }, [asyncState.data]);
 
   const filtered = useMemo(() => {
-    const data = asyncState.data ?? [];
-    const result = data.filter((s) => {
-      if (filters.search && !`${s.brand} ${s.model}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
+    const result = (asyncState.data ?? []).filter((s) => {
       if (filters.brands.length && !filters.brands.includes(s.brand)) return false;
       if (filters.types.length && !filters.types.includes(s.type)) return false;
       return true;
@@ -56,5 +68,9 @@ export const useStorageTab = () => {
     toast.success(`${s.brand} ${s.model} seçildi`);
   };
 
-  return { asyncState, filtered, filters, options, sort, setSort, viewMode, setViewMode, setFilters, toggleArrayFilter, resetFilters: () => setFilters(DEFAULT_FILTERS), handleSelect, selectedId: state.storageId };
+  return {
+    asyncState, filtered, filters, options, sort, setSort, viewMode, setViewMode, setFilters,
+    toggleArrayFilter, resetFilters: () => { setFilters(DEFAULT_FILTERS); setSearchInput(""); setCommittedSearch(""); },
+    handleSelect, selectedId: state.storageId, searchInput, setSearchInput, onSearch,
+  };
 };

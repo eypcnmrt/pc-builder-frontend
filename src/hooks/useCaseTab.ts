@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { fetchPcCases } from "../service/pccase";
 import { fetchCurrentBuild, updateBuild } from "../service/build";
 import { useBuildContext } from "../context/BuildContext";
@@ -8,11 +8,17 @@ import type { AsyncState } from "../types/common";
 import type { PcCase } from "../types/build";
 import { useNavigate } from "react-router-dom";
 
-interface CaseFilters { search: string; brands: string[]; formFactors: string[]; }
+interface CaseFilters { brands: string[]; formFactors: string[]; }
 type CaseSortField = "maxGpuLengthMm" | "maxCoolerHeightMm";
 interface SortState<T extends string> { field: T; direction: "asc" | "desc"; }
-const DEFAULT_FILTERS: CaseFilters = { search: "", brands: [], formFactors: [] };
+const DEFAULT_FILTERS: CaseFilters = { brands: [], formFactors: [] };
 const DEFAULT_SORT: SortState<CaseSortField> = { field: "maxGpuLengthMm", direction: "desc" };
+
+const buildODataFilter = (search: string): string | undefined => {
+  if (!search) return undefined;
+  const q = search.replace(/'/g, "''");
+  return `contains(tolower(Brand),'${q}') or contains(tolower(Model),'${q}')`;
+};
 
 export const useCaseTab = () => {
   const { state, setComponent, reset } = useBuildContext();
@@ -22,13 +28,23 @@ export const useCaseTab = () => {
   const [sort, setSort] = useState<SortState<CaseSortField>>(DEFAULT_SORT);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [committedSearch, setCommittedSearch] = useState("");
 
   useEffect(() => {
-    fetchPcCases(1, 200).then((r) => {
+    let cancelled = false;
+    const load = async () => {
+      setAsyncState(asyncLoading());
+      const r = await fetchPcCases(1, 200, buildODataFilter(committedSearch));
+      if (cancelled) return;
       if (!r) { setAsyncState(asyncError("Kasalar yüklenemedi.")); return; }
       setAsyncState(asyncSuccess(r.items));
-    });
-  }, []);
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [committedSearch]);
+
+  const onSearch = useCallback(() => setCommittedSearch(searchInput.trim().toLowerCase()), [searchInput]);
 
   const options = useMemo(() => ({
     brands: [...new Set((asyncState.data ?? []).map((c) => c.brand))].sort(),
@@ -37,7 +53,6 @@ export const useCaseTab = () => {
 
   const filtered = useMemo(() => {
     const result = (asyncState.data ?? []).filter((c) => {
-      if (filters.search && !`${c.brand} ${c.model}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
       if (filters.brands.length && !filters.brands.includes(c.brand)) return false;
       if (filters.formFactors.length && !filters.formFactors.includes(c.formFactor)) return false;
       return true;
@@ -81,5 +96,10 @@ export const useCaseTab = () => {
     }
   };
 
-  return { asyncState, filtered, filters, options, sort, setSort, viewMode, setViewMode, setFilters, toggleArrayFilter, resetFilters: () => setFilters(DEFAULT_FILTERS), handleSelect, handleFinalize, isSubmitting, selectedId: state.pcCaseId };
+  return {
+    asyncState, filtered, filters, options, sort, setSort, viewMode, setViewMode, setFilters,
+    toggleArrayFilter, resetFilters: () => { setFilters(DEFAULT_FILTERS); setSearchInput(""); setCommittedSearch(""); },
+    handleSelect, handleFinalize, isSubmitting, selectedId: state.pcCaseId,
+    searchInput, setSearchInput, onSearch,
+  };
 };

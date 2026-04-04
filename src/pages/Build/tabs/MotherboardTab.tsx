@@ -2,24 +2,14 @@ import React from "react";
 import { useMotherboardTab } from "../../../hooks/useMotherboardTab";
 import ComponentCard from "../../../components/ui/ComponentCard";
 import FilterPanel from "../../../components/ui/FilterPanel";
+import SearchBar from "../../../components/ui/SearchBar";
 import type { FilterPanelSection } from "../../../components/ui/FilterPanel";
 
 const MotherboardTab = () => {
   const {
-    asyncState,
-    filtered,
-    filters,
-    options,
-    viewMode,
-    sort,
-    setSort,
-    setViewMode,
-    setFilters,
-    toggleArrayFilter,
-    resetFilters,
-    handleSelect,
-    selectedId,
-    processorSocket,
+    asyncState, filtered, filters, options, viewMode, sort, setSort,
+    setViewMode, toggleArrayFilter, resetFilters, handleSelect, selectedId,
+    processorSocket, searchInput, setSearchInput, onSearch,
   } = useMotherboardTab();
 
   if (asyncState.loading) {
@@ -44,37 +34,14 @@ const MotherboardTab = () => {
   }
 
   const sections: FilterPanelSection[] = [
-    {
-      type: "checkbox",
-      label: "Marka",
-      options: options.brands,
-      selected: filters.brands,
-      onChange: (v) => toggleArrayFilter("brands", v),
-    },
-    {
-      type: "checkbox",
-      label: "Chipset",
-      options: options.chipsets,
-      selected: filters.chipsets,
-      onChange: (v) => toggleArrayFilter("chipsets", v),
-    },
-    {
-      type: "checkbox",
-      label: "Form Faktör",
-      options: options.formFactors,
-      selected: filters.formFactors,
-      onChange: (v) => toggleArrayFilter("formFactors", v),
-    },
+    { type: "checkbox", label: "Marka", options: options.brands, selected: filters.brands, onChange: (v) => toggleArrayFilter("brands", v) },
+    { type: "checkbox", label: "Chipset", options: options.chipsets, selected: filters.chipsets, onChange: (v) => toggleArrayFilter("chipsets", v) },
+    { type: "checkbox", label: "Form Faktör", options: options.formFactors, selected: filters.formFactors, onChange: (v) => toggleArrayFilter("formFactors", v) },
   ];
 
   return (
     <div className="flex gap-6">
-      <FilterPanel
-        search={filters.search}
-        onSearchChange={(v) => setFilters((f) => ({ ...f, search: v }))}
-        sections={sections}
-        onReset={resetFilters}
-      />
+      <FilterPanel sections={sections} onReset={resetFilters} />
       <div className="flex-1 min-w-0">
         {processorSocket ? (
           <div className="mb-4 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
@@ -90,12 +57,10 @@ const MotherboardTab = () => {
             <strong className="text-slate-900">{filtered.length}</strong> anakart
           </span>
           <div className="flex items-center gap-2">
+            <SearchBar value={searchInput} onChange={setSearchInput} onSearch={onSearch} />
             <select
               value={`${sort.field}|${sort.direction}`}
-              onChange={(e) => {
-                const [field, direction] = e.target.value.split("|");
-                setSort({ field: field as typeof sort.field, direction: direction as "asc" | "desc" });
-              }}
+              onChange={(e) => { const [field, direction] = e.target.value.split("|"); setSort({ field: field as typeof sort.field, direction: direction as "asc" | "desc" }); }}
               className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="price|asc">Fiyat ↑</option>
@@ -106,18 +71,8 @@ const MotherboardTab = () => {
               <option value="ramSlots|asc">RAM Slot ↑</option>
             </select>
             <div className="flex border border-slate-200 rounded-lg overflow-hidden">
-              <button
-                onClick={() => setViewMode("list")}
-                className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === "list" ? "bg-blue-600 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
-              >
-                ☰ Liste
-              </button>
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === "grid" ? "bg-blue-600 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
-              >
-                ⊞ Grid
-              </button>
+              <button onClick={() => setViewMode("list")} className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === "list" ? "bg-blue-600 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}>☰ Liste</button>
+              <button onClick={() => setViewMode("grid")} className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === "grid" ? "bg-blue-600 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}>⊞ Grid</button>
             </div>
           </div>
         </div>
@@ -129,21 +84,9 @@ const MotherboardTab = () => {
           <div className={viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
             {filtered.map((m) => (
               <ComponentCard
-                key={m.id}
-                id={m.id}
-                brand={m.brand}
-                model={m.model}
-                imageUrl={m.imageUrl}
-                price={m.price}
-                isSelected={selectedId === m.id}
-                mode={viewMode}
-                onSelect={() => handleSelect(m)}
-                specs={[
-                  { label: "Soket", value: m.socket },
-                  { label: "Chipset", value: m.chipset },
-                  { label: "Form", value: m.formFactor },
-                  { label: "DDR", value: m.supportedRamType },
-                ]}
+                key={m.id} id={m.id} brand={m.brand} model={m.model} imageUrl={m.imageUrl} price={m.price}
+                isSelected={selectedId === m.id} mode={viewMode} onSelect={() => handleSelect(m)}
+                specs={[{ label: "Soket", value: m.socket }, { label: "Chipset", value: m.chipset }, { label: "Form", value: m.formFactor }, { label: "DDR", value: m.supportedRamType }]}
               />
             ))}
           </div>

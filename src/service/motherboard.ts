@@ -3,10 +3,14 @@ import type { PagedData } from "../types/processor";
 import type { Motherboard } from "../types/motherboard";
 
 export const fetchCompatibleMotherboards = async (
-  socket: string,
+  socket: string | undefined,
   page = 1,
   pageSize = 100
-) =>
-  instance.get<PagedData<Motherboard>>("Motherboard/compatible", {
+): Promise<PagedData<Motherboard> | null> => {
+  if (!socket) {
+    return instance.getOData<Motherboard>("Motherboard", page, pageSize);
+  }
+  return instance.get<PagedData<Motherboard>>("Motherboard/compatible", {
     params: { socket, page, pageSize },
   });
+};

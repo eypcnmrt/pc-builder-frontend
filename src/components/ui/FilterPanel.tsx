@@ -82,13 +82,11 @@ export interface FilterPanelRange {
 type FilterSection = FilterPanelSection | FilterPanelRange;
 
 interface FilterPanelProps {
-  search: string;
-  onSearchChange: (value: string) => void;
   sections: FilterSection[];
   onReset: () => void;
 }
 
-const FilterPanel = ({ search, onSearchChange, sections, onReset }: FilterPanelProps) => (
+const FilterPanel = ({ sections, onReset }: FilterPanelProps) => (
   <aside className="w-56 flex-shrink-0">
     <div className="bg-white rounded-xl border border-slate-200 p-4 sticky top-24">
       <div className="flex items-center justify-between mb-4">
@@ -99,18 +97,6 @@ const FilterPanel = ({ search, onSearchChange, sections, onReset }: FilterPanelP
         >
           Sıfırla
         </button>
-      </div>
-      <div className="relative mb-4">
-        <input
-          type="search"
-          placeholder="Ara..."
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full border border-slate-200 rounded-lg pl-8 pr-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <svg className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-        </svg>
       </div>
       {sections.map((section, i) =>
         section.type === "checkbox" ? (

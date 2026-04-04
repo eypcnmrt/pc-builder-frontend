@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { fetchCompatibleMotherboards } from "../service/motherboard";
 import { useBuildContext } from "../context/BuildContext";
 import { toast } from "../components/Toast";
@@ -7,7 +7,6 @@ import type { AsyncState } from "../types/common";
 import type { Motherboard } from "../types/motherboard";
 
 interface MotherboardFilters {
-  search: string;
   brands: string[];
   chipsets: string[];
   formFactors: string[];
@@ -16,7 +15,7 @@ interface MotherboardFilters {
 type MotherboardSortField = "price" | "maxRamGb" | "ramSlots";
 interface SortState<T extends string> { field: T; direction: "asc" | "desc"; }
 
-const DEFAULT_FILTERS: MotherboardFilters = { search: "", brands: [], chipsets: [], formFactors: [] };
+const DEFAULT_FILTERS: MotherboardFilters = { brands: [], chipsets: [], formFactors: [] };
 const DEFAULT_SORT: SortState<MotherboardSortField> = { field: "price", direction: "asc" };
 
 export const useMotherboardTab = () => {
@@ -25,19 +24,24 @@ export const useMotherboardTab = () => {
   const [filters, setFilters] = useState<MotherboardFilters>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<SortState<MotherboardSortField>>(DEFAULT_SORT);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [searchInput, setSearchInput] = useState("");
+  const [committedSearch, setCommittedSearch] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
-      const socket = state.processor?.socket ?? "";
+      setAsyncState(asyncLoading());
+      const socket = state.processor?.socket || undefined;
       const result = await fetchCompatibleMotherboards(socket, 1, 200);
-      if (!result) {
-        setAsyncState(asyncError("Anakartlar yüklenemedi."));
-        return;
-      }
+      if (cancelled) return;
+      if (!result) { setAsyncState(asyncError("Anakartlar yüklenemedi.")); return; }
       setAsyncState(asyncSuccess(result.items));
     };
     load();
+    return () => { cancelled = true; };
   }, [state.processor?.socket]);
+
+  const onSearch = useCallback(() => setCommittedSearch(searchInput.trim().toLowerCase()), [searchInput]);
 
   const options = useMemo(() => {
     const data = asyncState.data ?? [];
@@ -51,7 +55,7 @@ export const useMotherboardTab = () => {
   const filtered = useMemo(() => {
     const data = asyncState.data ?? [];
     const result = data.filter((m) => {
-      if (filters.search && !`${m.brand} ${m.model}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
+      if (committedSearch && !`${m.brand} ${m.model}`.toLowerCase().includes(committedSearch)) return false;
       if (filters.brands.length && !filters.brands.includes(m.brand)) return false;
       if (filters.chipsets.length && !filters.chipsets.includes(m.chipset)) return false;
       if (filters.formFactors.length && !filters.formFactors.includes(m.formFactor)) return false;
@@ -62,9 +66,9 @@ export const useMotherboardTab = () => {
       const bVal = (b[sort.field] ?? 0) as number;
       return sort.direction === "asc" ? aVal - bVal : bVal - aVal;
     });
-  }, [asyncState.data, filters, sort]);
+  }, [asyncState.data, filters, sort, committedSearch]);
 
-  const toggleArrayFilter = (key: keyof Omit<MotherboardFilters, "search">, value: string) => {
+  const toggleArrayFilter = (key: keyof MotherboardFilters, value: string) => {
     setFilters((f) => ({
       ...f,
       [key]: f[key].includes(value) ? f[key].filter((v) => v !== value) : [...f[key], value],
@@ -88,9 +92,12 @@ export const useMotherboardTab = () => {
     setViewMode,
     setFilters,
     toggleArrayFilter,
-    resetFilters: () => setFilters(DEFAULT_FILTERS),
+    resetFilters: () => { setFilters(DEFAULT_FILTERS); setSearchInput(""); setCommittedSearch(""); },
     handleSelect,
     selectedId: state.motherboardId,
     processorSocket: state.processor?.socket,
+    searchInput,
+    setSearchInput,
+    onSearch,
   };
 };
