@@ -7,12 +7,16 @@ import type { AsyncState } from "../types/common";
 import type { Storage } from "../types/build";
 
 interface StorageFilters { search: string; brands: string[]; types: string[]; }
+type StorageSortField = "capacityGb" | "readSpeedMbs" | "writeSpeedMbs";
+interface SortState<T extends string> { field: T; direction: "asc" | "desc"; }
 const DEFAULT_FILTERS: StorageFilters = { search: "", brands: [], types: [] };
+const DEFAULT_SORT: SortState<StorageSortField> = { field: "capacityGb", direction: "desc" };
 
 export const useStorageTab = () => {
   const { state, setComponent } = useBuildContext();
   const [asyncState, setAsyncState] = useState<AsyncState<Storage[]>>(asyncLoading());
   const [filters, setFilters] = useState<StorageFilters>(DEFAULT_FILTERS);
+  const [sort, setSort] = useState<SortState<StorageSortField>>(DEFAULT_SORT);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
   useEffect(() => {
@@ -31,13 +35,18 @@ export const useStorageTab = () => {
 
   const filtered = useMemo(() => {
     const data = asyncState.data ?? [];
-    return data.filter((s) => {
+    const result = data.filter((s) => {
       if (filters.search && !`${s.brand} ${s.model}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
       if (filters.brands.length && !filters.brands.includes(s.brand)) return false;
       if (filters.types.length && !filters.types.includes(s.type)) return false;
       return true;
     });
-  }, [asyncState.data, filters]);
+    return [...result].sort((a, b) => {
+      const aVal = (a[sort.field] ?? 0) as number;
+      const bVal = (b[sort.field] ?? 0) as number;
+      return sort.direction === "asc" ? aVal - bVal : bVal - aVal;
+    });
+  }, [asyncState.data, filters, sort]);
 
   const toggleArrayFilter = (key: "brands" | "types", value: string) =>
     setFilters((f) => ({ ...f, [key]: f[key].includes(value) ? f[key].filter((v) => v !== value) : [...f[key], value] }));
@@ -47,5 +56,5 @@ export const useStorageTab = () => {
     toast.success(`${s.brand} ${s.model} seçildi`);
   };
 
-  return { asyncState, filtered, filters, options, viewMode, setViewMode, setFilters, toggleArrayFilter, resetFilters: () => setFilters(DEFAULT_FILTERS), handleSelect, selectedId: state.storageId };
+  return { asyncState, filtered, filters, options, sort, setSort, viewMode, setViewMode, setFilters, toggleArrayFilter, resetFilters: () => setFilters(DEFAULT_FILTERS), handleSelect, selectedId: state.storageId };
 };

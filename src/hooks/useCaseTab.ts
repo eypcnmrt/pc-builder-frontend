@@ -9,13 +9,17 @@ import type { PcCase } from "../types/build";
 import { useNavigate } from "react-router-dom";
 
 interface CaseFilters { search: string; brands: string[]; formFactors: string[]; }
+type CaseSortField = "maxGpuLengthMm" | "maxCoolerHeightMm";
+interface SortState<T extends string> { field: T; direction: "asc" | "desc"; }
 const DEFAULT_FILTERS: CaseFilters = { search: "", brands: [], formFactors: [] };
+const DEFAULT_SORT: SortState<CaseSortField> = { field: "maxGpuLengthMm", direction: "desc" };
 
 export const useCaseTab = () => {
   const { state, setComponent, reset } = useBuildContext();
   const navigate = useNavigate();
   const [asyncState, setAsyncState] = useState<AsyncState<PcCase[]>>(asyncLoading());
   const [filters, setFilters] = useState<CaseFilters>(DEFAULT_FILTERS);
+  const [sort, setSort] = useState<SortState<CaseSortField>>(DEFAULT_SORT);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -31,12 +35,19 @@ export const useCaseTab = () => {
     formFactors: [...new Set((asyncState.data ?? []).map((c) => c.formFactor))].sort(),
   }), [asyncState.data]);
 
-  const filtered = useMemo(() => (asyncState.data ?? []).filter((c) => {
-    if (filters.search && !`${c.brand} ${c.model}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
-    if (filters.brands.length && !filters.brands.includes(c.brand)) return false;
-    if (filters.formFactors.length && !filters.formFactors.includes(c.formFactor)) return false;
-    return true;
-  }), [asyncState.data, filters]);
+  const filtered = useMemo(() => {
+    const result = (asyncState.data ?? []).filter((c) => {
+      if (filters.search && !`${c.brand} ${c.model}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
+      if (filters.brands.length && !filters.brands.includes(c.brand)) return false;
+      if (filters.formFactors.length && !filters.formFactors.includes(c.formFactor)) return false;
+      return true;
+    });
+    return [...result].sort((a, b) => {
+      const aVal = (a[sort.field] ?? 0) as number;
+      const bVal = (b[sort.field] ?? 0) as number;
+      return sort.direction === "asc" ? aVal - bVal : bVal - aVal;
+    });
+  }, [asyncState.data, filters, sort]);
 
   const toggleArrayFilter = (key: "brands" | "formFactors", value: string) =>
     setFilters((f) => ({ ...f, [key]: f[key].includes(value) ? f[key].filter((v) => v !== value) : [...f[key], value] }));
@@ -70,5 +81,5 @@ export const useCaseTab = () => {
     }
   };
 
-  return { asyncState, filtered, filters, options, viewMode, setViewMode, setFilters, toggleArrayFilter, resetFilters: () => setFilters(DEFAULT_FILTERS), handleSelect, handleFinalize, isSubmitting, selectedId: state.pcCaseId };
+  return { asyncState, filtered, filters, options, sort, setSort, viewMode, setViewMode, setFilters, toggleArrayFilter, resetFilters: () => setFilters(DEFAULT_FILTERS), handleSelect, handleFinalize, isSubmitting, selectedId: state.pcCaseId };
 };

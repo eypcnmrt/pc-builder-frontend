@@ -14,6 +14,9 @@ interface ProcessorFilters {
   priceMax: number;
 }
 
+export type ProcessorSortField = "price" | "cores" | "boostClock";
+export interface SortState<T extends string> { field: T; direction: "asc" | "desc"; }
+
 const DEFAULT_FILTERS: ProcessorFilters = {
   search: "",
   brands: [],
@@ -22,10 +25,13 @@ const DEFAULT_FILTERS: ProcessorFilters = {
   priceMax: 999999,
 };
 
+const DEFAULT_SORT: SortState<ProcessorSortField> = { field: "price", direction: "asc" };
+
 export const useProcessorTab = () => {
   const { state, setComponent } = useBuildContext();
   const [asyncState, setAsyncState] = useState<AsyncState<Processor[]>>(asyncLoading());
   const [filters, setFilters] = useState<ProcessorFilters>(DEFAULT_FILTERS);
+  const [sort, setSort] = useState<SortState<ProcessorSortField>>(DEFAULT_SORT);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
   useEffect(() => {
@@ -56,14 +62,19 @@ export const useProcessorTab = () => {
 
   const filtered = useMemo(() => {
     const data = asyncState.data ?? [];
-    return data.filter((p) => {
+    const result = data.filter((p) => {
       if (filters.search && !`${p.brand} ${p.model}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
       if (filters.brands.length && !filters.brands.includes(p.brand)) return false;
       if (filters.sockets.length && !filters.sockets.includes(p.socket)) return false;
       if (p.price != null && (p.price < filters.priceMin || p.price > filters.priceMax)) return false;
       return true;
     });
-  }, [asyncState.data, filters]);
+    return [...result].sort((a, b) => {
+      const aVal = a[sort.field] ?? 0;
+      const bVal = b[sort.field] ?? 0;
+      return sort.direction === "asc" ? (aVal as number) - (bVal as number) : (bVal as number) - (aVal as number);
+    });
+  }, [asyncState.data, filters, sort]);
 
   const toggleArrayFilter = (key: "brands" | "sockets", value: string) => {
     setFilters((f) => ({
@@ -87,6 +98,8 @@ export const useProcessorTab = () => {
     filtered,
     filters,
     options,
+    sort,
+    setSort,
     viewMode,
     setViewMode,
     setFilters,

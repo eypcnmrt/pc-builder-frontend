@@ -13,12 +13,17 @@ interface MotherboardFilters {
   formFactors: string[];
 }
 
+type MotherboardSortField = "price" | "maxRamGb" | "ramSlots";
+interface SortState<T extends string> { field: T; direction: "asc" | "desc"; }
+
 const DEFAULT_FILTERS: MotherboardFilters = { search: "", brands: [], chipsets: [], formFactors: [] };
+const DEFAULT_SORT: SortState<MotherboardSortField> = { field: "price", direction: "asc" };
 
 export const useMotherboardTab = () => {
   const { state, setComponent } = useBuildContext();
   const [asyncState, setAsyncState] = useState<AsyncState<Motherboard[]>>(asyncLoading());
   const [filters, setFilters] = useState<MotherboardFilters>(DEFAULT_FILTERS);
+  const [sort, setSort] = useState<SortState<MotherboardSortField>>(DEFAULT_SORT);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
   useEffect(() => {
@@ -45,14 +50,19 @@ export const useMotherboardTab = () => {
 
   const filtered = useMemo(() => {
     const data = asyncState.data ?? [];
-    return data.filter((m) => {
+    const result = data.filter((m) => {
       if (filters.search && !`${m.brand} ${m.model}`.toLowerCase().includes(filters.search.toLowerCase())) return false;
       if (filters.brands.length && !filters.brands.includes(m.brand)) return false;
       if (filters.chipsets.length && !filters.chipsets.includes(m.chipset)) return false;
       if (filters.formFactors.length && !filters.formFactors.includes(m.formFactor)) return false;
       return true;
     });
-  }, [asyncState.data, filters]);
+    return [...result].sort((a, b) => {
+      const aVal = (a[sort.field] ?? 0) as number;
+      const bVal = (b[sort.field] ?? 0) as number;
+      return sort.direction === "asc" ? aVal - bVal : bVal - aVal;
+    });
+  }, [asyncState.data, filters, sort]);
 
   const toggleArrayFilter = (key: keyof Omit<MotherboardFilters, "search">, value: string) => {
     setFilters((f) => ({
@@ -72,6 +82,8 @@ export const useMotherboardTab = () => {
     filtered,
     filters,
     options,
+    sort,
+    setSort,
     viewMode,
     setViewMode,
     setFilters,

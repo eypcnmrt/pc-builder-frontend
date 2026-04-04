@@ -11,6 +11,8 @@ const MotherboardTab = () => {
     filters,
     options,
     viewMode,
+    sort,
+    setSort,
     setViewMode,
     setFilters,
     toggleArrayFilter,
@@ -87,27 +89,36 @@ const MotherboardTab = () => {
           <span className="text-sm text-slate-500">
             <strong className="text-slate-900">{filtered.length}</strong> anakart
           </span>
-          <div className="flex border border-slate-200 rounded-lg overflow-hidden">
-            <button
-              onClick={() => setViewMode("list")}
-              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                viewMode === "list"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-slate-600 hover:bg-slate-50"
-              }`}
+          <div className="flex items-center gap-2">
+            <select
+              value={`${sort.field}|${sort.direction}`}
+              onChange={(e) => {
+                const [field, direction] = e.target.value.split("|");
+                setSort({ field: field as typeof sort.field, direction: direction as "asc" | "desc" });
+              }}
+              className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
-              ☰ Liste
-            </button>
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                viewMode === "grid"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-slate-600 hover:bg-slate-50"
-              }`}
-            >
-              ⊞ Grid
-            </button>
+              <option value="price|asc">Fiyat ↑</option>
+              <option value="price|desc">Fiyat ↓</option>
+              <option value="maxRamGb|desc">Max RAM ↓</option>
+              <option value="maxRamGb|asc">Max RAM ↑</option>
+              <option value="ramSlots|desc">RAM Slot ↓</option>
+              <option value="ramSlots|asc">RAM Slot ↑</option>
+            </select>
+            <div className="flex border border-slate-200 rounded-lg overflow-hidden">
+              <button
+                onClick={() => setViewMode("list")}
+                className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === "list" ? "bg-blue-600 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
+              >
+                ☰ Liste
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === "grid" ? "bg-blue-600 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
+              >
+                ⊞ Grid
+              </button>
+            </div>
           </div>
         </div>
         {filtered.length === 0 ? (
