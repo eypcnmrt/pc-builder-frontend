@@ -1,16 +1,30 @@
 import React from "react";
 import { useProcessorTab } from "../../../hooks/useProcessorTab";
+import { usePagination } from "../../../hooks/usePagination";
 import ComponentCard from "../../../components/ui/ComponentCard";
 import FilterPanel from "../../../components/ui/FilterPanel";
 import SearchBar from "../../../components/ui/SearchBar";
+import Pagination from "../../../components/ui/Pagination";
 import type { FilterPanelSection, FilterPanelRange } from "../../../components/ui/FilterPanel";
 
 const ProcessorTab = () => {
   const {
-    asyncState, filtered, filters, options, viewMode, sort, setSort,
-    setViewMode, toggleArrayFilter, resetFilters, setFilters, handleSelect, selectedId,
+    asyncState, filtered, pendingFilters, setPendingFilters, options, viewMode, sort, setSort,
+    setViewMode, togglePendingBrand, togglePendingSocket, togglePendingSeries, togglePendingBoostClock,
+    applyPriceFilter, applyBrandsFilter, applySocketsFilter, applySeriesFilter, applyBoostClocksFilter,
+    resetFilters, handleSelect, selectedId,
     searchInput, setSearchInput, onSearch,
   } = useProcessorTab();
+
+  const { paginated, pagination } = usePagination(filtered, [
+    filtered.length,
+    pendingFilters.brands.join(),
+    pendingFilters.sockets.join(),
+    pendingFilters.series.join(),
+    pendingFilters.boostClocks.join(),
+    pendingFilters.priceMin,
+    pendingFilters.priceMax,
+  ]);
 
   if (asyncState.loading) {
     return (
@@ -43,27 +57,46 @@ const ProcessorTab = () => {
 
   const filterSections: (FilterPanelSection | FilterPanelRange)[] = [
     {
+      type: "range",
+      label: "Fiyat Aralığı",
+      min: options.minPrice,
+      max: options.maxPrice,
+      value: [pendingFilters.priceMin, pendingFilters.priceMax],
+      onChange: ([min, max]) => setPendingFilters((f) => ({ ...f, priceMin: min, priceMax: max })),
+      onApply: applyPriceFilter,
+      unit: "₺",
+    },
+    {
+      type: "checkbox",
+      label: "İşlemci Serisi",
+      options: options.series,
+      selected: pendingFilters.series,
+      onChange: togglePendingSeries,
+      onApply: applySeriesFilter,
+    },
+    {
+      type: "checkbox",
+      label: "İşlemci Soket Tipi",
+      options: options.sockets,
+      selected: pendingFilters.sockets,
+      onChange: togglePendingSocket,
+      onApply: applySocketsFilter,
+    },
+    {
+      type: "checkbox",
+      label: "Frekans Hızı",
+      options: options.boostClocks.map((v) => `${v.toFixed(1)} GHz`),
+      selected: pendingFilters.boostClocks.map((v) => `${v.toFixed(1)} GHz`),
+      onChange: togglePendingBoostClock,
+      onApply: applyBoostClocksFilter,
+    },
+    {
       type: "checkbox",
       label: "Marka",
       options: options.brands,
-      selected: filters.brands,
-      onChange: (v) => toggleArrayFilter("brands", v),
-    },
-    {
-      type: "checkbox",
-      label: "Soket",
-      options: options.sockets,
-      selected: filters.sockets,
-      onChange: (v) => toggleArrayFilter("sockets", v),
-    },
-    {
-      type: "range",
-      label: "Fiyat",
-      min: options.minPrice,
-      max: options.maxPrice,
-      value: [filters.priceMin, filters.priceMax],
-      onChange: ([min, max]) => setFilters((f) => ({ ...f, priceMin: min, priceMax: max })),
-      unit: "₺",
+      selected: pendingFilters.brands,
+      onChange: togglePendingBrand,
+      onApply: applyBrandsFilter,
     },
   ];
 
@@ -77,7 +110,7 @@ const ProcessorTab = () => {
             <strong className="text-slate-900">{filtered.length}</strong> işlemci
           </span>
           <div className="flex items-center gap-2">
-            <SearchBar value={searchInput} onChange={setSearchInput} onSearch={onSearch} />
+            <SearchBar value={searchInput} onChange={setSearchInput} onSearch={onSearch} placeholder="İşlemci ara" />
             <select
               value={`${sort.field}|${sort.direction}`}
               onChange={(e) => {
@@ -115,27 +148,30 @@ const ProcessorTab = () => {
             Arama kriterlerine uygun işlemci bulunamadı.
           </div>
         ) : (
-          <div className={viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
-            {filtered.map((p) => (
-              <ComponentCard
-                key={p.id}
-                id={p.id}
-                brand={p.brand}
-                model={p.model}
-                imageUrl={p.imageUrl}
-                price={p.price}
-                isSelected={selectedId === p.id}
-                mode={viewMode}
-                onSelect={() => handleSelect(p)}
-                specs={[
-                  { label: "Soket", value: p.socket },
-                  { label: "Çekirdek", value: `${p.cores}C/${p.threads}T` },
-                  { label: "TDP", value: `${p.tdp}W` },
-                  { label: "Boost", value: `${p.boostClock} GHz` },
-                ]}
-              />
-            ))}
-          </div>
+          <>
+            <div className={viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
+              {paginated.map((p) => (
+                <ComponentCard
+                  key={p.id}
+                  id={p.id}
+                  brand={p.brand}
+                  model={p.model}
+                  imageUrl={p.imageUrl}
+                  price={p.price}
+                  isSelected={selectedId === p.id}
+                  mode={viewMode}
+                  onSelect={() => handleSelect(p)}
+                  specs={[
+                    { label: "Soket", value: p.socket },
+                    { label: "Çekirdek", value: `${p.cores}C/${p.threads}T` },
+                    { label: "TDP", value: `${p.tdp}W` },
+                    { label: "Boost", value: `${p.boostClock} GHz` },
+                  ]}
+                />
+              ))}
+            </div>
+            <Pagination pagination={pagination} label="işlemci" />
+          </>
         )}
       </div>
     </div>

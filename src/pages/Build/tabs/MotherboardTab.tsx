@@ -1,8 +1,10 @@
 import React from "react";
 import { useMotherboardTab } from "../../../hooks/useMotherboardTab";
+import { usePagination } from "../../../hooks/usePagination";
 import ComponentCard from "../../../components/ui/ComponentCard";
 import FilterPanel from "../../../components/ui/FilterPanel";
 import SearchBar from "../../../components/ui/SearchBar";
+import Pagination from "../../../components/ui/Pagination";
 import type { FilterPanelSection } from "../../../components/ui/FilterPanel";
 
 const MotherboardTab = () => {
@@ -11,6 +13,8 @@ const MotherboardTab = () => {
     setViewMode, toggleArrayFilter, resetFilters, handleSelect, selectedId,
     processorSocket, searchInput, setSearchInput, onSearch,
   } = useMotherboardTab();
+
+  const { paginated, pagination } = usePagination(filtered, [filtered.length, filters.brands.join(), filters.chipsets.join(), filters.formFactors.join()]);
 
   if (asyncState.loading) {
     return (
@@ -34,9 +38,9 @@ const MotherboardTab = () => {
   }
 
   const sections: FilterPanelSection[] = [
-    { type: "checkbox", label: "Marka", options: options.brands, selected: filters.brands, onChange: (v) => toggleArrayFilter("brands", v) },
-    { type: "checkbox", label: "Chipset", options: options.chipsets, selected: filters.chipsets, onChange: (v) => toggleArrayFilter("chipsets", v) },
-    { type: "checkbox", label: "Form Faktör", options: options.formFactors, selected: filters.formFactors, onChange: (v) => toggleArrayFilter("formFactors", v) },
+    { type: "checkbox", label: "Marka", options: options.brands, selected: filters.brands, onChange: (v) => toggleArrayFilter("brands", v), onApply: () => {} },
+    { type: "checkbox", label: "Chipset", options: options.chipsets, selected: filters.chipsets, onChange: (v) => toggleArrayFilter("chipsets", v), onApply: () => {} },
+    { type: "checkbox", label: "Form Faktör", options: options.formFactors, selected: filters.formFactors, onChange: (v) => toggleArrayFilter("formFactors", v), onApply: () => {} },
   ];
 
   return (
@@ -57,7 +61,7 @@ const MotherboardTab = () => {
             <strong className="text-slate-900">{filtered.length}</strong> anakart
           </span>
           <div className="flex items-center gap-2">
-            <SearchBar value={searchInput} onChange={setSearchInput} onSearch={onSearch} />
+            <SearchBar value={searchInput} onChange={setSearchInput} onSearch={onSearch} placeholder="Anakart ara" />
             <select
               value={`${sort.field}|${sort.direction}`}
               onChange={(e) => { const [field, direction] = e.target.value.split("|"); setSort({ field: field as typeof sort.field, direction: direction as "asc" | "desc" }); }}
@@ -81,15 +85,18 @@ const MotherboardTab = () => {
             Uyumlu anakart bulunamadı.
           </div>
         ) : (
-          <div className={viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
-            {filtered.map((m) => (
-              <ComponentCard
-                key={m.id} id={m.id} brand={m.brand} model={m.model} imageUrl={m.imageUrl} price={m.price}
-                isSelected={selectedId === m.id} mode={viewMode} onSelect={() => handleSelect(m)}
-                specs={[{ label: "Soket", value: m.socket }, { label: "Chipset", value: m.chipset }, { label: "Form", value: m.formFactor }, { label: "DDR", value: m.supportedRamType }]}
-              />
-            ))}
-          </div>
+          <>
+            <div className={viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
+              {paginated.map((m) => (
+                <ComponentCard
+                  key={m.id} id={m.id} brand={m.brand} model={m.model} imageUrl={m.imageUrl} price={m.price}
+                  isSelected={selectedId === m.id} mode={viewMode} onSelect={() => handleSelect(m)}
+                  specs={[{ label: "Soket", value: m.socket }, { label: "Chipset", value: m.chipset }, { label: "Form", value: m.formFactor }, { label: "DDR", value: m.supportedRamType }]}
+                />
+              ))}
+            </div>
+            <Pagination pagination={pagination} label="anakart" />
+          </>
         )}
       </div>
     </div>

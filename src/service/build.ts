@@ -1,11 +1,12 @@
 import instance from "./instance";
 import type { Build, BuildActivity, UpdateBuildRequest } from "../types/build";
+import type { PagedData } from "../types/processor";
 
 export const fetchCurrentBuild = async () =>
   instance.get<Build>("Build/current");
 
 export const fetchBuildActivities = async (buildId: number) =>
-  instance.get<BuildActivity[]>(`Build/${buildId}/activities`);
+  instance.get<PagedData<BuildActivity>>(`Build/${buildId}/activities`);
 
 export const createBuild = async (name?: string) =>
   instance.post<Build>("Build", { name });

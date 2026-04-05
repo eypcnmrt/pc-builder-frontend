@@ -1,21 +1,27 @@
 import React from "react";
 import { useGpuTab } from "../../../hooks/useGpuTab";
+import { usePagination } from "../../../hooks/usePagination";
 import ComponentCard from "../../../components/ui/ComponentCard";
 import FilterPanel from "../../../components/ui/FilterPanel";
 import SearchBar from "../../../components/ui/SearchBar";
+import Pagination from "../../../components/ui/Pagination";
 
 const GpuTab = () => {
   const { asyncState, filtered, filters, options, viewMode, sort, setSort, setViewMode, setFilters, toggleBrand, resetFilters, handleSelect, selectedId, searchInput, setSearchInput, onSearch } = useGpuTab();
+
+  const { paginated, pagination } = usePagination(filtered, [filtered.length, filters.brands.join()]);
+
   if (asyncState.loading) return <div className="h-64 flex items-center justify-center"><div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" /></div>;
   if (asyncState.error) return <div className="h-64 flex items-center justify-center text-slate-500 text-sm">{asyncState.error}</div>;
+
   return (
     <div className="flex gap-6">
-      <FilterPanel sections={[{ type: "checkbox", label: "Marka", options: options.brands, selected: filters.brands, onChange: toggleBrand }]} onReset={resetFilters} />
+      <FilterPanel sections={[{ type: "checkbox", label: "Marka", options: options.brands, selected: filters.brands, onChange: toggleBrand, onApply: () => {} }]} onReset={resetFilters} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm text-slate-500"><strong className="text-slate-900">{filtered.length}</strong> ekran kartı</span>
           <div className="flex items-center gap-2">
-            <SearchBar value={searchInput} onChange={setSearchInput} onSearch={onSearch} />
+            <SearchBar value={searchInput} onChange={setSearchInput} onSearch={onSearch} placeholder="GPU ara" />
             <select
               value={`${sort.field}|${sort.direction}`}
               onChange={(e) => { const [field, direction] = e.target.value.split("|"); setSort({ field: field as typeof sort.field, direction: direction as "asc" | "desc" }); }}
@@ -34,13 +40,22 @@ const GpuTab = () => {
             </div>
           </div>
         </div>
-        <div className={viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
-          {filtered.map((g) => (
-            <ComponentCard key={g.id} id={g.id} brand={g.brand} model={g.model} imageUrl={g.imageUrl}
-              isSelected={selectedId === g.id} mode={viewMode} onSelect={() => handleSelect(g)}
-              specs={[{ label: "VRAM", value: `${g.memoryGb}GB` }, { label: "Boost", value: `${g.boostClock} MHz` }, { label: "TDP", value: `${g.tdp}W` }]} />
-          ))}
-        </div>
+        {filtered.length === 0 ? (
+          <div className="flex items-center justify-center h-48 text-slate-400 text-sm">
+            Arama kriterlerine uygun ekran kartı bulunamadı.
+          </div>
+        ) : (
+          <>
+            <div className={viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
+              {paginated.map((g) => (
+                <ComponentCard key={g.id} id={g.id} brand={g.brand} model={g.model} imageUrl={g.imageUrl}
+                  isSelected={selectedId === g.id} mode={viewMode} onSelect={() => handleSelect(g)}
+                  specs={[{ label: "VRAM", value: `${g.memoryGb}GB` }, { label: "Boost", value: `${g.boostClock} MHz` }, { label: "TDP", value: `${g.tdp}W` }]} />
+              ))}
+            </div>
+            <Pagination pagination={pagination} label="ekran kartı" />
+          </>
+        )}
       </div>
     </div>
   );

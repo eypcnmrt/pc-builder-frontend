@@ -1,19 +1,25 @@
 import React from "react";
 import { useRamTab } from "../../../hooks/useRamTab";
+import { usePagination } from "../../../hooks/usePagination";
 import ComponentCard from "../../../components/ui/ComponentCard";
 import FilterPanel from "../../../components/ui/FilterPanel";
 import SearchBar from "../../../components/ui/SearchBar";
+import Pagination from "../../../components/ui/Pagination";
 
 const RamTab = () => {
   const { asyncState, filtered, filters, options, viewMode, sort, setSort, setViewMode, setFilters, toggleArrayFilter, resetFilters, handleSelect, selectedId, ramTypeFilter, searchInput, setSearchInput, onSearch } = useRamTab();
+
+  const { paginated, pagination } = usePagination(filtered, [filtered.length, filters.brands.join(), filters.types.join()]);
+
   if (asyncState.loading) return <div className="h-64 flex items-center justify-center"><div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" /></div>;
   if (asyncState.error) return <div className="h-64 flex items-center justify-center text-slate-500 text-sm">{asyncState.error}</div>;
+
   return (
     <div className="flex gap-6">
       <FilterPanel
         sections={[
-          { type: "checkbox", label: "Marka", options: options.brands, selected: filters.brands, onChange: (v) => toggleArrayFilter("brands", v) },
-          { type: "checkbox", label: "DDR Tipi", options: options.types, selected: filters.types, onChange: (v) => toggleArrayFilter("types", v) },
+          { type: "checkbox", label: "Marka", options: options.brands, selected: filters.brands, onChange: (v) => toggleArrayFilter("brands", v), onApply: () => {} },
+          { type: "checkbox", label: "DDR Tipi", options: options.types, selected: filters.types, onChange: (v) => toggleArrayFilter("types", v), onApply: () => {} },
         ]}
         onReset={resetFilters} />
       <div className="flex-1 min-w-0">
@@ -25,7 +31,7 @@ const RamTab = () => {
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm text-slate-500"><strong className="text-slate-900">{filtered.length}</strong> RAM</span>
           <div className="flex items-center gap-2">
-            <SearchBar value={searchInput} onChange={setSearchInput} onSearch={onSearch} />
+            <SearchBar value={searchInput} onChange={setSearchInput} onSearch={onSearch} placeholder="RAM ara" />
             <select
               value={`${sort.field}|${sort.direction}`}
               onChange={(e) => { const [field, direction] = e.target.value.split("|"); setSort({ field: field as typeof sort.field, direction: direction as "asc" | "desc" }); }}
@@ -44,13 +50,22 @@ const RamTab = () => {
             </div>
           </div>
         </div>
-        <div className={viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
-          {filtered.map((r) => (
-            <ComponentCard key={r.id} id={r.id} brand={r.brand} model={r.model} imageUrl={r.imageUrl}
-              isSelected={selectedId === r.id} mode={viewMode} onSelect={() => handleSelect(r)}
-              specs={[{ label: "Tip", value: r.type }, { label: "Kapasite", value: `${r.capacityGb}GB` }, { label: "Hız", value: `${r.speedMhz} MHz` }]} />
-          ))}
-        </div>
+        {filtered.length === 0 ? (
+          <div className="flex items-center justify-center h-48 text-slate-400 text-sm">
+            Arama kriterlerine uygun RAM bulunamadı.
+          </div>
+        ) : (
+          <>
+            <div className={viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
+              {paginated.map((r) => (
+                <ComponentCard key={r.id} id={r.id} brand={r.brand} model={r.model} imageUrl={r.imageUrl}
+                  isSelected={selectedId === r.id} mode={viewMode} onSelect={() => handleSelect(r)}
+                  specs={[{ label: "Tip", value: r.type }, { label: "Kapasite", value: `${r.capacityGb}GB` }, { label: "Hız", value: `${r.speedMhz} MHz` }]} />
+              ))}
+            </div>
+            <Pagination pagination={pagination} label="RAM" />
+          </>
+        )}
       </div>
     </div>
   );

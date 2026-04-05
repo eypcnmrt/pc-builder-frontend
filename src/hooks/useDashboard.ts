@@ -17,7 +17,7 @@ export const useDashboard = () => {
       }
       setBuildState(asyncSuccess(build));
       const acts = await fetchBuildActivities(build.id);
-      setActivities(acts ?? []);
+      setActivities(acts?.items ?? []);
     };
     load();
   }, []);

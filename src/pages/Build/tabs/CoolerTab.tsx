@@ -1,26 +1,32 @@
 import React from "react";
 import { useCoolerTab } from "../../../hooks/useCoolerTab";
+import { usePagination } from "../../../hooks/usePagination";
 import ComponentCard from "../../../components/ui/ComponentCard";
 import FilterPanel from "../../../components/ui/FilterPanel";
 import SearchBar from "../../../components/ui/SearchBar";
+import Pagination from "../../../components/ui/Pagination";
 
 const CoolerTab = () => {
   const { asyncState, filtered, filters, options, viewMode, sort, setSort, setViewMode, setFilters, toggleArrayFilter, resetFilters, handleSelect, selectedId, searchInput, setSearchInput, onSearch } = useCoolerTab();
+
+  const { paginated, pagination } = usePagination(filtered, [filtered.length, filters.brands.join(), filters.types.join()]);
+
   if (asyncState.loading) return <div className="h-64 flex items-center justify-center"><div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" /></div>;
   if (asyncState.error) return <div className="h-64 flex items-center justify-center text-slate-500 text-sm">{asyncState.error}</div>;
+
   return (
     <div className="flex gap-6">
       <FilterPanel
         sections={[
-          { type: "checkbox", label: "Marka", options: options.brands, selected: filters.brands, onChange: (v) => toggleArrayFilter("brands", v) },
-          { type: "checkbox", label: "Tip", options: options.types, selected: filters.types, onChange: (v) => toggleArrayFilter("types", v) },
+          { type: "checkbox", label: "Marka", options: options.brands, selected: filters.brands, onChange: (v) => toggleArrayFilter("brands", v), onApply: () => {} },
+          { type: "checkbox", label: "Tip", options: options.types, selected: filters.types, onChange: (v) => toggleArrayFilter("types", v), onApply: () => {} },
         ]}
         onReset={resetFilters} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm text-slate-500"><strong className="text-slate-900">{filtered.length}</strong> soğutucu</span>
           <div className="flex items-center gap-2">
-            <SearchBar value={searchInput} onChange={setSearchInput} onSearch={onSearch} />
+            <SearchBar value={searchInput} onChange={setSearchInput} onSearch={onSearch} placeholder="Soğutucu ara" />
             <select
               value={`${sort.field}|${sort.direction}`}
               onChange={(e) => { const [field, direction] = e.target.value.split("|"); setSort({ field: field as typeof sort.field, direction: direction as "asc" | "desc" }); }}
@@ -37,13 +43,22 @@ const CoolerTab = () => {
             </div>
           </div>
         </div>
-        <div className={viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
-          {filtered.map((c) => (
-            <ComponentCard key={c.id} id={c.id} brand={c.brand} model={c.model} imageUrl={c.imageUrl}
-              isSelected={selectedId === c.id} mode={viewMode} onSelect={() => handleSelect(c)}
-              specs={[{ label: "Tip", value: c.type }, { label: "TDP", value: `${c.tdpW}W` }, { label: "Soket", value: c.compatibleSockets }]} />
-          ))}
-        </div>
+        {filtered.length === 0 ? (
+          <div className="flex items-center justify-center h-48 text-slate-400 text-sm">
+            Arama kriterlerine uygun soğutucu bulunamadı.
+          </div>
+        ) : (
+          <>
+            <div className={viewMode === "grid" ? "grid grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-2"}>
+              {paginated.map((c) => (
+                <ComponentCard key={c.id} id={c.id} brand={c.brand} model={c.model} imageUrl={c.imageUrl}
+                  isSelected={selectedId === c.id} mode={viewMode} onSelect={() => handleSelect(c)}
+                  specs={[{ label: "Tip", value: c.type }, { label: "TDP", value: `${c.tdpW}W` }, { label: "Soket", value: c.compatibleSockets }]} />
+              ))}
+            </div>
+            <Pagination pagination={pagination} label="soğutucu" />
+          </>
+        )}
       </div>
     </div>
   );
