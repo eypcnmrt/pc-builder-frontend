@@ -151,6 +151,24 @@ export const useProcessorTab = () => {
     return () => { cancelled = true; };
   }, [appliedFilters, committedSearch]);
 
+  // Diğer filtreler değişince, fiyat aralığını yeni listeye göre reset et
+  useEffect(() => {
+    if (asyncState.data?.length) {
+      const prices = asyncState.data.map((p) => p.price ?? 0).filter((p) => p > 0);
+      if (prices.length) {
+        const min = Math.min(...prices);
+        const max = Math.max(...prices);
+        setPendingFilters((f) => ({ ...f, priceMin: min, priceMax: max }));
+      }
+    }
+  }, [
+    appliedFilters.brands.join(),
+    appliedFilters.series.join(),
+    appliedFilters.sockets.join(),
+    appliedFilters.boostClocks.join(),
+    asyncState.data,
+  ]);
+
   const onSearch = useCallback(() => {
     setCommittedSearch(searchInput.trim().toLowerCase());
   }, [searchInput]);
