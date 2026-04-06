@@ -15,6 +15,9 @@ export const DUMMY_PROCESSORS: Processor[] = [
   { id: 8, brand: "AMD", model: "Ryzen 5 7600X", series: "Ryzen 5", socket: "AM5", cores: 6, threads: 12, baseClock: 4.7, boostClock: 5.3, tdp: 105, l3Cache: 32, memoryType: "DDR5", integratedGraphics: false, price: 1800 },
   { id: 9, brand: "AMD", model: "Ryzen 7 7700X", series: "Ryzen 7", socket: "AM5", cores: 8, threads: 16, baseClock: 4.5, boostClock: 5.4, tdp: 105, l3Cache: 32, memoryType: "DDR5", integratedGraphics: false, price: 2800 },
   { id: 10, brand: "AMD", model: "Ryzen 9 7950X", series: "Ryzen 9", socket: "AM5", cores: 16, threads: 32, baseClock: 4.5, boostClock: 5.7, tdp: 162, l3Cache: 64, memoryType: "DDR5", integratedGraphics: false, price: 4600 },
+  { id: 11, brand: "AMD", model: "Ryzen 5 5600X", series: "Ryzen 5", socket: "AM4", cores: 6, threads: 12, baseClock: 3.7, boostClock: 4.6, tdp: 65, l3Cache: 32, memoryType: "DDR4", integratedGraphics: false, price: 1200 },
+  { id: 12, brand: "AMD", model: "Ryzen 7 5800X", series: "Ryzen 7", socket: "AM4", cores: 8, threads: 16, baseClock: 3.8, boostClock: 4.7, tdp: 105, l3Cache: 32, memoryType: "DDR4", integratedGraphics: false, price: 1800 },
+  { id: 13, brand: "AMD", model: "Ryzen 9 5950X", series: "Ryzen 9", socket: "AM4", cores: 16, threads: 32, baseClock: 3.4, boostClock: 4.9, tdp: 105, l3Cache: 64, memoryType: "DDR4", integratedGraphics: false, price: 3200 },
 ];
 
 // ===== GPUs =====
