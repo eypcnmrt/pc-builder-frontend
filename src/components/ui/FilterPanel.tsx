@@ -74,7 +74,7 @@ const RangeInput = ({ label, min, max, value, onChange, onApply, unit = "" }: Ra
     <div className="flex items-center gap-2">
       <input
         type="number"
-        value={value[0] === min ? "" : value[0]}
+        value={value[0]}
         min={min}
         max={value[1]}
         placeholder="Min Fiyat"
@@ -83,7 +83,7 @@ const RangeInput = ({ label, min, max, value, onChange, onApply, unit = "" }: Ra
       />
       <input
         type="number"
-        value={value[1] === max ? "" : value[1]}
+        value={value[1]}
         min={value[0]}
         max={max}
         placeholder="Max Fiyat"
