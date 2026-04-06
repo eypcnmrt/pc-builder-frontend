@@ -65,6 +65,16 @@ const ProcessorTab = () => {
       onApply: applyBrandsFilter,
     },
     {
+      type: "range",
+      label: "Fiyat Aralığı",
+      min: options.minPrice,
+      max: options.maxPrice,
+      value: [pendingFilters.priceMin, pendingFilters.priceMax],
+      onChange: ([min, max]) => setPendingFilters((f) => ({ ...f, priceMin: min, priceMax: max })),
+      onApply: applyPriceFilter,
+      unit: "₺",
+    },
+    {
       type: "checkbox",
       label: "İşlemci Serisi",
       options: options.series,
@@ -87,16 +97,6 @@ const ProcessorTab = () => {
       selected: pendingFilters.boostClocks.map((v) => `${v.toFixed(1)} GHz`),
       onChange: togglePendingBoostClock,
       onApply: applyBoostClocksFilter,
-    },
-    {
-      type: "range",
-      label: "Fiyat Aralığı",
-      min: options.minPrice,
-      max: options.maxPrice,
-      value: [pendingFilters.priceMin, pendingFilters.priceMax],
-      onChange: ([min, max]) => setPendingFilters((f) => ({ ...f, priceMin: min, priceMax: max })),
-      onApply: applyPriceFilter,
-      unit: "₺",
     },
   ];
 
