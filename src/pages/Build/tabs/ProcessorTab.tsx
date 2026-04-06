@@ -76,19 +76,19 @@ const ProcessorTab = () => {
     },
     {
       type: "checkbox",
-      label: "İşlemci Serisi",
-      options: options.series,
-      selected: pendingFilters.series,
-      onChange: togglePendingSeries,
-      onApply: applySeriesFilter,
-    },
-    {
-      type: "checkbox",
       label: "İşlemci Soket Tipi",
       options: options.sockets,
       selected: pendingFilters.sockets,
       onChange: togglePendingSocket,
       onApply: applySocketsFilter,
+    },
+    {
+      type: "checkbox",
+      label: "İşlemci Serisi",
+      options: options.series,
+      selected: pendingFilters.series,
+      onChange: togglePendingSeries,
+      onApply: applySeriesFilter,
     },
     {
       type: "checkbox",
