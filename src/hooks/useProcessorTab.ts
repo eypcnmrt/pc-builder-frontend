@@ -153,20 +153,49 @@ export const useProcessorTab = () => {
 
   // Diğer filtreler değişince, fiyat aralığını yeni listeye göre reset et
   useEffect(() => {
-    if (asyncState.data?.length) {
-      const prices = asyncState.data.map((p) => p.price ?? 0).filter((p) => p > 0);
-      if (prices.length) {
-        const min = Math.min(...prices);
-        const max = Math.max(...prices);
-        setPendingFilters((f) => ({ ...f, priceMin: min, priceMax: max }));
-      }
+    const fullData = allData.length ? allData : [];
+
+    // Step 1: Brand filtresini uygula
+    let step1 = fullData;
+    if (appliedFilters.brands.length) {
+      step1 = fullData.filter((p) => appliedFilters.brands.includes(p.brand));
+    }
+
+    // Step 2: Series filtresini uygula
+    let step2 = step1;
+    if (appliedFilters.series.length) {
+      step2 = step1.filter((p) => appliedFilters.series.includes(extractSeries(p.model)));
+    }
+
+    // Step 3: Socket filtresini uygula
+    let step3 = step2;
+    if (appliedFilters.sockets.length) {
+      step3 = step2.filter((p) => appliedFilters.sockets.includes(p.socket));
+    }
+
+    // Step 4: BoostClock filtresini uygula
+    let step4 = step3;
+    if (appliedFilters.boostClocks.length) {
+      step4 = step3.filter((p) =>
+        appliedFilters.boostClocks.some((v) =>
+          Math.abs(p.boostClock - v) < 0.05
+        )
+      );
+    }
+
+    // Fiyat min/max'ı hesapla
+    const prices = step4.map((p) => p.price ?? 0).filter((p) => p > 0);
+    if (prices.length > 0) {
+      const min = Math.min(...prices);
+      const max = Math.max(...prices);
+      setPendingFilters((f) => ({ ...f, priceMin: min, priceMax: max }));
     }
   }, [
+    allData,
     appliedFilters.brands.join(),
     appliedFilters.series.join(),
     appliedFilters.sockets.join(),
     appliedFilters.boostClocks.join(),
-    asyncState.data,
   ]);
 
   const onSearch = useCallback(() => {
