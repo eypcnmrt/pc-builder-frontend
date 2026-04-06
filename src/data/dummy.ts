@@ -96,17 +96,64 @@ function createPagedData<T>(items: T[], page: number, pageSize: number): PagedDa
 }
 
 // ===== FILTERS =====
+function evaluateOData(item: any, odataFilter: string): boolean {
+  let expr = odataFilter;
+
+  // Handle Brand eq 'value'
+  expr = expr.replace(/Brand\s+eq\s+'([^']+)'/gi, (_, val) => {
+    return item.brand === val ? "true" : "false";
+  });
+
+  // Handle Socket eq 'value'
+  expr = expr.replace(/Socket\s+eq\s+'([^']+)'/gi, (_, val) => {
+    return item.socket === val ? "true" : "false";
+  });
+
+  // Handle contains(tolower(Brand),'value')
+  expr = expr.replace(/contains\(tolower\(Brand\),'([^']+)'\)/gi, (_, val) => {
+    return (item.brand || "").toLowerCase().includes(val) ? "true" : "false";
+  });
+
+  // Handle contains(tolower(Model),'value')
+  expr = expr.replace(/contains\(tolower\(Model\),'([^']+)'\)/gi, (_, val) => {
+    return (item.model || "").toLowerCase().includes(val) ? "true" : "false";
+  });
+
+  // Handle Price/BoostClock comparisons
+  expr = expr.replace(/Price\s+ge\s+(\d+)/gi, (_, val) => {
+    return item.price >= Number(val) ? "true" : "false";
+  });
+  expr = expr.replace(/Price\s+le\s+(\d+)/gi, (_, val) => {
+    return item.price <= Number(val) ? "true" : "false";
+  });
+  expr = expr.replace(/BoostClock\s+ge\s+([\d.]+)/gi, (_, val) => {
+    return item.boostClock >= Number(val) ? "true" : "false";
+  });
+  expr = expr.replace(/BoostClock\s+le\s+([\d.]+)/gi, (_, val) => {
+    return item.boostClock <= Number(val) ? "true" : "false";
+  });
+
+  // Handle 'or' and 'and'
+  expr = expr.replace(/\s+or\s+/gi, " || ");
+  expr = expr.replace(/\s+and\s+/gi, " && ");
+
+  // Clean up parentheses
+  expr = expr.replace(/\(\s*true\s*\)/g, "true");
+  expr = expr.replace(/\(\s*false\s*\)/g, "false");
+
+  try {
+    return Function(`'use strict'; return (${expr})`)();
+  } catch {
+    return true; // default: include
+  }
+}
+
 function filterByOData<T extends { brand?: string; model?: string }>(
   items: T[],
   odataFilter?: string
 ): T[] {
   if (!odataFilter) return items;
-  const lower = odataFilter.toLowerCase();
-  return items.filter(item => {
-    const brand = (item.brand || "").toLowerCase();
-    const model = (item.model || "").toLowerCase();
-    return brand.includes(lower) || model.includes(lower);
-  });
+  return items.filter(item => evaluateOData(item, odataFilter));
 }
 
 // ===== PUBLIC API =====
