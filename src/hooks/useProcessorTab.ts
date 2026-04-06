@@ -15,7 +15,7 @@ interface ProcessorFilters {
   priceMax: number;
 }
 
-export type ProcessorSortField = "price" | "cores" | "boostClock";
+export type ProcessorSortField = "price" | "cores" | "boostClock" | "tdp";
 export interface SortState<T extends string> { field: T; direction: "asc" | "desc"; }
 
 const DEFAULT_FILTERS: ProcessorFilters = {

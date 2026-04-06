@@ -125,6 +125,8 @@ const ProcessorTab = () => {
               <option value="cores|asc">Çekirdek ↑</option>
               <option value="boostClock|desc">Boost Hz ↓</option>
               <option value="boostClock|asc">Boost Hz ↑</option>
+              <option value="tdp|asc">TDP ↑</option>
+              <option value="tdp|desc">TDP ↓</option>
             </select>
             <div className="flex border border-slate-200 rounded-lg overflow-hidden">
               <button
