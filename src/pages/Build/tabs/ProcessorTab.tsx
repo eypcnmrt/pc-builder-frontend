@@ -69,7 +69,7 @@ const ProcessorTab = () => {
       label: "Fiyat Aralığı",
       min: options.minPrice,
       max: options.maxPrice,
-      value: [pendingFilters.priceMin, pendingFilters.priceMax],
+      value: [options.minPrice, options.maxPrice],
       onChange: ([min, max]) => setPendingFilters((f) => ({ ...f, priceMin: min, priceMax: max })),
       onApply: applyPriceFilter,
       unit: "₺",
