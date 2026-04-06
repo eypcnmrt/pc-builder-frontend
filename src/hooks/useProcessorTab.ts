@@ -155,38 +155,81 @@ export const useProcessorTab = () => {
     setCommittedSearch(searchInput.trim().toLowerCase());
   }, [searchInput]);
 
-  // Tüm (filtresiz) veriden türetilen seçenek listeleri
+  // Merdiven mantığıyla filtrelenen seçenek listeleri
   const options = useMemo(() => {
-    const data = allData.length ? allData : (asyncState.data ?? []);
-    const prices = data.map((p) => p.price ?? 0).filter(Boolean);
+    const fullData = allData.length ? allData : (asyncState.data ?? []);
 
-    const seriesSet = new Set<string>();
-    data.forEach((p) => {
-      const s = extractSeries(p.model);
-      if (s) seriesSet.add(s);
-    });
+    // Step 1: Brand filtresini uygula
+    let step1 = fullData;
+    if (appliedFilters.brands.length) {
+      step1 = fullData.filter((p) => appliedFilters.brands.includes(p.brand));
+    }
 
-    const boostSet = new Set<number>();
-    data.forEach((p) => {
-      if (p.boostClock > 0) boostSet.add(Math.round(p.boostClock * 10) / 10);
-    });
+    // Step 2: Series filtresini uygula
+    let step2 = step1;
+    if (appliedFilters.series.length) {
+      step2 = step1.filter((p) => appliedFilters.series.includes(extractSeries(p.model)));
+    }
 
-    // Seri sıralaması: Intel Ultra > Intel Core > AMD Ryzen (descending number)
-    const seriesOrder = [
-      "Core Ultra 9","Core Ultra 7","Core Ultra 5",
-      "Core i9","Core i7","Core i5","Core i3",
-      "Ryzen 9","Ryzen 7","Ryzen 5",
-    ];
+    // Step 3: Socket filtresini uygula
+    let step3 = step2;
+    if (appliedFilters.sockets.length) {
+      step3 = step2.filter((p) => appliedFilters.sockets.includes(p.socket));
+    }
+
+    // Step 4: BoostClock filtresini uygula
+    let step4 = step3;
+    if (appliedFilters.boostClocks.length) {
+      step4 = step3.filter((p) =>
+        appliedFilters.boostClocks.some((v) =>
+          Math.abs(p.boostClock - v) < 0.05
+        )
+      );
+    }
+
+    // Her step'ten options çıkar
+    const getSeriesOptions = (data: Processor[]) => {
+      const seriesSet = new Set<string>();
+      data.forEach((p) => {
+        const s = extractSeries(p.model);
+        if (s) seriesSet.add(s);
+      });
+      const seriesOrder = [
+        "Core Ultra 9","Core Ultra 7","Core Ultra 5",
+        "Core i9","Core i7","Core i5","Core i3",
+        "Ryzen 9","Ryzen 7","Ryzen 5",
+      ];
+      return seriesOrder.filter((s) => seriesSet.has(s));
+    };
+
+    const getBoostOptions = (data: Processor[]) => {
+      const boostSet = new Set<number>();
+      data.forEach((p) => {
+        if (p.boostClock > 0) boostSet.add(Math.round(p.boostClock * 10) / 10);
+      });
+      return [...boostSet].sort((a, b) => b - a);
+    };
+
+    const getPrices = (data: Processor[]) => {
+      const prices = data.map((p) => p.price ?? 0).filter(Boolean);
+      return prices;
+    };
+
+    const brandOptions = [...new Set(fullData.map((p) => p.brand))].sort();
+    const seriesOptions = getSeriesOptions(step1);
+    const socketOptions = [...new Set(step2.map((p) => p.socket))].sort();
+    const boostOptions = getBoostOptions(step3);
+    const priceOptions = getPrices(step4);
 
     return {
-      brands:      [...new Set(data.map((p) => p.brand))].sort(),
-      sockets:     [...new Set(data.map((p) => p.socket))].sort(),
-      series:      seriesOrder.filter((s) => seriesSet.has(s)),
-      boostClocks: [...boostSet].sort((a, b) => b - a),
-      minPrice:    prices.length ? Math.min(...prices) : 0,
-      maxPrice:    prices.length ? Math.max(...prices) : 999999,
+      brands:      brandOptions,
+      sockets:     socketOptions,
+      series:      seriesOptions,
+      boostClocks: boostOptions,
+      minPrice:    priceOptions.length ? Math.min(...priceOptions) : 0,
+      maxPrice:    priceOptions.length ? Math.max(...priceOptions) : 999999,
     };
-  }, [allData, asyncState.data]);
+  }, [allData, asyncState.data, appliedFilters]);
 
   // Sadece sırala — filtreleme sunucu tarafında yapıldı
   const filtered = useMemo(() => {
