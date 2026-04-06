@@ -232,6 +232,15 @@ export const useProcessorTab = () => {
     };
   }, [allData, asyncState.data, appliedFilters]);
 
+  // Options değişince pendingFilters'ı güncelle (merdiven mantığıyla)
+  useEffect(() => {
+    setPendingFilters((f) => ({
+      ...f,
+      priceMin: options.minPrice,
+      priceMax: options.maxPrice,
+    }));
+  }, [options.minPrice, options.maxPrice]);
+
   // Sadece sırala — filtreleme sunucu tarafında yapıldı
   const filtered = useMemo(() => {
     const data = asyncState.data ?? [];
