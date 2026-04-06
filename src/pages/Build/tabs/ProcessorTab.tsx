@@ -57,14 +57,12 @@ const ProcessorTab = () => {
 
   const filterSections: (FilterPanelSection | FilterPanelRange)[] = [
     {
-      type: "range",
-      label: "Fiyat Aralığı",
-      min: options.minPrice,
-      max: options.maxPrice,
-      value: [pendingFilters.priceMin, pendingFilters.priceMax],
-      onChange: ([min, max]) => setPendingFilters((f) => ({ ...f, priceMin: min, priceMax: max })),
-      onApply: applyPriceFilter,
-      unit: "₺",
+      type: "checkbox",
+      label: "Marka",
+      options: options.brands,
+      selected: pendingFilters.brands,
+      onChange: togglePendingBrand,
+      onApply: applyBrandsFilter,
     },
     {
       type: "checkbox",
@@ -91,12 +89,14 @@ const ProcessorTab = () => {
       onApply: applyBoostClocksFilter,
     },
     {
-      type: "checkbox",
-      label: "Marka",
-      options: options.brands,
-      selected: pendingFilters.brands,
-      onChange: togglePendingBrand,
-      onApply: applyBrandsFilter,
+      type: "range",
+      label: "Fiyat Aralığı",
+      min: options.minPrice,
+      max: options.maxPrice,
+      value: [pendingFilters.priceMin, pendingFilters.priceMax],
+      onChange: ([min, max]) => setPendingFilters((f) => ({ ...f, priceMin: min, priceMax: max })),
+      onApply: applyPriceFilter,
+      unit: "₺",
     },
   ];
 
