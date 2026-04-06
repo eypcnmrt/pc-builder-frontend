@@ -5,16 +5,16 @@ import ComponentCard from "../../../components/ui/ComponentCard";
 import FilterPanel from "../../../components/ui/FilterPanel";
 import SearchBar from "../../../components/ui/SearchBar";
 import Pagination from "../../../components/ui/Pagination";
-import type { FilterPanelSection } from "../../../components/ui/FilterPanel";
+import type { FilterPanelSection, FilterPanelRange } from "../../../components/ui/FilterPanel";
 
 const MotherboardTab = () => {
   const {
     asyncState, filtered, filters, options, viewMode, sort, setSort,
-    setViewMode, toggleArrayFilter, resetFilters, handleSelect, selectedId,
+    setViewMode, setFilters, toggleArrayFilter, resetFilters, handleSelect, selectedId,
     processorSocket, searchInput, setSearchInput, onSearch,
   } = useMotherboardTab();
 
-  const { paginated, pagination } = usePagination(filtered, [filtered.length, filters.brands.join(), filters.chipsets.join(), filters.formFactors.join()]);
+  const { paginated, pagination } = usePagination(filtered, [filtered.length, filters.brands.join(), filters.chipsets.join(), filters.formFactors.join(), filters.priceMin, filters.priceMax]);
 
   if (asyncState.loading) {
     return (
@@ -37,8 +37,9 @@ const MotherboardTab = () => {
     );
   }
 
-  const sections: FilterPanelSection[] = [
+  const sections: (FilterPanelSection | FilterPanelRange)[] = [
     { type: "checkbox", label: "Marka", options: options.brands, selected: filters.brands, onChange: (v) => toggleArrayFilter("brands", v), onApply: () => {} },
+    { type: "range", label: "Fiyat Aralığı", min: options.minPrice, max: options.maxPrice, value: [filters.priceMin, filters.priceMax], onChange: ([min, max]) => setFilters((f) => ({ ...f, priceMin: min, priceMax: max })), onApply: () => {}, unit: "₺" },
     { type: "checkbox", label: "Chipset", options: options.chipsets, selected: filters.chipsets, onChange: (v) => toggleArrayFilter("chipsets", v), onApply: () => {} },
     { type: "checkbox", label: "Form Faktör", options: options.formFactors, selected: filters.formFactors, onChange: (v) => toggleArrayFilter("formFactors", v), onApply: () => {} },
   ];
