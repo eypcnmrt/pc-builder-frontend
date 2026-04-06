@@ -173,9 +173,9 @@ export const useProcessorTab = () => {
 
     // Seri sıralaması: Intel Ultra > Intel Core > AMD Ryzen (descending number)
     const seriesOrder = [
-      "Core Ultra 9","Core Ultra 7","Core Ultra 5","Core Ultra 3",
+      "Core Ultra 9","Core Ultra 7","Core Ultra 5",
       "Core i9","Core i7","Core i5","Core i3",
-      "Ryzen 9","Ryzen 7","Ryzen 5","Ryzen 3","Threadripper",
+      "Ryzen 9","Ryzen 7","Ryzen 5",
     ];
 
     return {
